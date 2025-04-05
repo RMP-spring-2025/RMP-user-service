@@ -9,6 +9,7 @@ import org.healthapp.infrastructure.handler.AddProductConsumptionHandler
 import org.healthapp.infrastructure.handler.DefaultHandleRegistry
 import org.healthapp.infrastructure.handler.HandleRegistry
 import org.healthapp.infrastructure.handler.RequestHandler
+import org.healthapp.infrastructure.persistance.DatabaseConfiguration
 
 fun main() {
     val jsonAddProduct = """
@@ -32,4 +33,21 @@ fun main() {
     val handleRegistry: HandleRegistry = DefaultHandleRegistry(handlers)
     val adapter = KeyDBAdapter(fakeKeyDB, handleRegistry)
     adapter.startListening()
+
+
+}
+
+fun checkConnection(){
+    val connection = DatabaseConfiguration.getConnection()
+
+    val statement = connection.createStatement()
+    val resultSet = statement.executeQuery("SELECT version()")
+
+    while (resultSet.next()) {
+        println("PostgreSQL version: ${resultSet.getString(1)}")
+    }
+
+    resultSet.close()
+    statement.close()
+    connection.close()
 }
