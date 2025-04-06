@@ -1,0 +1,19 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:latest
+    container_name: rmp_user_postgres
+    environment:
+      POSTGRES_USER: user_postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: user_db
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./docker/postgres/init/create_tables.sql:/docker-entrypoint-initdb.d/create_tables.sql
+    restart: unless-stopped
+
+volumes:
+  postgres_data:
