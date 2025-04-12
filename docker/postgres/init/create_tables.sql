@@ -12,7 +12,7 @@ create table if not exists user_products(
     user_id INTEGER REFERENCES users(id),
     product_id INTEGER NOT NULL,
     mass_consumed INTEGER NOT NULL,
-    timestamp timestamp default now()
+    timestamp date NOT NULL,
     check ( mass_consumed > 0 )
 
 );
