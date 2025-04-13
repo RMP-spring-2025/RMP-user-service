@@ -23,4 +23,14 @@ sealed class Request {
         val date: String,
         @SerialName("mass_consumed") val massConsumed: Double
     ) : Request()
+
+    @Serializable
+    @SerialName("get_calories")
+    data class GetCaloriesRequest(
+        @SerialName("request_id") override val requestId: Long,
+        @SerialName("user_id") override val userId: Long,
+        override val type: String,
+        val from: String,
+        val to: String
+    ) : Request()
 }

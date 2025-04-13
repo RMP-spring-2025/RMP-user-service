@@ -1,35 +1,93 @@
 package org.healthapp
 
-import org.healthapp.app.port.input.AddProductConsumptionPort
 import app.service.AddProductConsumptionService
-import org.healthapp.infrastructure.adapter.input.FakeKeyDBPort
+import app.service.GetUserCaloriesService
+import kotlinx.coroutines.*
+import org.healthapp.app.port.input.AddProductConsumptionPort
+import org.healthapp.app.port.input.GetUserCaloriesPort
 import org.healthapp.infrastructure.adapter.input.KeyDBAdapter
+import org.healthapp.infrastructure.adapter.input.KeyDBPortImpl
 import org.healthapp.infrastructure.adapter.output.UserProductInMemoryRepositoryImpl
-import org.healthapp.infrastructure.handler.AddProductConsumptionHandler
 import org.healthapp.infrastructure.handler.DefaultHandleRegistry
-import org.healthapp.infrastructure.handler.HandleRegistry
-import org.healthapp.infrastructure.handler.RequestHandler
+import org.healthapp.infrastructure.handler.handlers.AddProductConsumptionHandler
+import org.healthapp.infrastructure.handler.handlers.GetCaloriesHandler
+import org.healthapp.infrastructure.handler.interfaces.HandleRegistry
+import org.healthapp.infrastructure.handler.interfaces.RequestHandler
+import java.time.LocalDate
+import kotlin.random.Random
 
 fun main() {
-    val jsonAddProduct = """
-        {
-            "request_id": 123,
-            "user_id": 42,
-            "type": "add_product",
-            "product_id": 123,
-            "date": "2025-03-30",
-            "mass_consumed": 12.0
-        }
-    """.trimIndent()
-    val fakeKeyDB = FakeKeyDBPort()
-    fakeKeyDB.addRequest(jsonAddProduct)
+    val scope = CoroutineScope(Dispatchers.Default + Job())
+    val realKeyDb = KeyDBPortImpl()
 
-    val addProductConsumptionService: AddProductConsumptionPort = AddProductConsumptionService(UserProductInMemoryRepositoryImpl())
+    val job = scope.launch {
+        sendPeriodicRequests(realKeyDb)
+    }
+    val inMemRep = UserProductInMemoryRepositoryImpl()
+    val addProductConsumptionService: AddProductConsumptionPort = AddProductConsumptionService(inMemRep)
+    val getCaloriesService: GetUserCaloriesPort = GetUserCaloriesService(inMemRep)
     val handlers: Map<String, RequestHandler> = mapOf(
-        "add_product" to AddProductConsumptionHandler(addProductConsumptionService)
+        "add_product" to AddProductConsumptionHandler(addProductConsumptionService),
+        "get_calories" to GetCaloriesHandler(getCaloriesService)
     )
 
     val handleRegistry: HandleRegistry = DefaultHandleRegistry(handlers)
-    val adapter = KeyDBAdapter(fakeKeyDB, handleRegistry)
+    val adapter = KeyDBAdapter(realKeyDb, handleRegistry)
     adapter.startListening()
+}
+
+suspend fun sendPeriodicRequests(keyDb: KeyDBPortImpl) {
+    var requestId = 124
+    var addProductCount = 0
+
+    while (true) {
+        if (addProductCount < 2) {
+
+            val newRequest = buildAddProductRequest(requestId)
+            keyDb.sendRequest(newRequest)
+            println("Sent add_product request with ID: $requestId")
+            addProductCount++
+        } else {
+
+            val getCaloriesRequest = buildGetCaloriesRequest(requestId)
+            keyDb.sendRequest(getCaloriesRequest)
+            println("Sent get_calories request with ID: $requestId")
+            addProductCount = 0
+        }
+
+        requestId++
+        delay(1000)
+    }
+}
+
+fun buildAddProductRequest(requestId: Int): String {
+    val currentDate = LocalDate.now().toString()
+    val productId = Random.nextInt(1, 5)
+    val massConsumed = Random.nextDouble(1.0, 100.0)
+
+    return """
+        {
+            "request_id": $requestId,
+            "user_id": 42,
+            "type": "add_product",
+            "product_id": $productId,
+            "date": "$currentDate",
+            "mass_consumed": $massConsumed
+        }
+    """.trimIndent()
+}
+
+fun buildGetCaloriesRequest(requestId: Int): String {
+    val fromDate = LocalDate.now().minusDays(0).toString()
+    val toDate = LocalDate.now().toString()
+
+    return """
+    {
+        "type": "get_calories",
+        "request_id": $requestId,
+        "user_id": 42,
+        "from": "$fromDate",
+        "to": "$toDate"
+    }
+""".trimIndent()
 }

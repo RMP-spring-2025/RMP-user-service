@@ -1,6 +1,9 @@
 package org.healthapp.infrastructure.handler
 
-class DefaultHandleRegistry(private val handlers: Map<String, RequestHandler>): HandleRegistry {
+import org.healthapp.infrastructure.handler.interfaces.HandleRegistry
+import org.healthapp.infrastructure.handler.interfaces.RequestHandler
+
+class DefaultHandleRegistry(private val handlers: Map<String, RequestHandler>) : HandleRegistry {
     override fun getHandler(requestType: String): RequestHandler? = handlers[requestType]
 
 }
