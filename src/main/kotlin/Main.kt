@@ -14,6 +14,7 @@ import org.healthapp.infrastructure.handler.handlers.GetCaloriesHandler
 import org.healthapp.infrastructure.handler.interfaces.HandleRegistry
 import org.healthapp.infrastructure.handler.interfaces.RequestHandler
 import java.time.LocalDate
+import java.util.UUID
 import kotlin.random.Random
 
 fun main() {
@@ -37,10 +38,11 @@ fun main() {
 }
 
 suspend fun sendPeriodicRequests(keyDb: KeyDBPortImpl) {
-    var requestId = 124
+
     var addProductCount = 0
 
     while (true) {
+        var requestId = UUID.randomUUID()
         if (addProductCount < 2) {
 
             val newRequest = buildAddProductRequest(requestId)
@@ -54,13 +56,11 @@ suspend fun sendPeriodicRequests(keyDb: KeyDBPortImpl) {
             println("Sent get_calories request with ID: $requestId")
             addProductCount = 0
         }
-
-        requestId++
         delay(1000)
     }
 }
 
-fun buildAddProductRequest(requestId: Int): String {
+fun buildAddProductRequest(requestId: UUID): String {
     val currentDate = LocalDate.now().toString()
     val productId = Random.nextInt(1, 5)
     val massConsumed = Random.nextDouble(1.0, 100.0)
@@ -69,7 +69,7 @@ fun buildAddProductRequest(requestId: Int): String {
         {
             "request_id": $requestId,
             "user_id": 42,
-            "type": "add_product",
+            "requestType": "add_product",
             "product_id": $productId,
             "date": "$currentDate",
             "mass_consumed": $massConsumed
@@ -77,13 +77,13 @@ fun buildAddProductRequest(requestId: Int): String {
     """.trimIndent()
 }
 
-fun buildGetCaloriesRequest(requestId: Int): String {
+fun buildGetCaloriesRequest(requestId: UUID): String {
     val fromDate = LocalDate.now().minusDays(0).toString()
     val toDate = LocalDate.now().toString()
 
     return """
     {
-        "type": "get_calories",
+        "requestType": "get_calories",
         "request_id": $requestId,
         "user_id": 42,
         "from": "$fromDate",

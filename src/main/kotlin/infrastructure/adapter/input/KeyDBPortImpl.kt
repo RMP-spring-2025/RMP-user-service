@@ -27,7 +27,6 @@ class KeyDBPortImpl(
         commands.lpush(responseQueue, jsonString)
     }
 
-
     fun sendRequest(request: String) {
         commands.lpush(requestQueue, request)
     }

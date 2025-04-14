@@ -12,5 +12,6 @@ object JsonSerializationConfig {
         ignoreUnknownKeys = true
         prettyPrint = true
         classDiscriminatorMode = ClassDiscriminatorMode.NONE
+        isLenient = true
     }
 }

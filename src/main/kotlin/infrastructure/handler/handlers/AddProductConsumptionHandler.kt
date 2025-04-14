@@ -19,6 +19,6 @@ class AddProductConsumptionHandler(private val addProductConsumptionPort: AddPro
                 request.date
             )
         )
-        return Response.SuccessResponse(1L, "Success")
+        return Response.SuccessResponse(request.requestId, "Success")
     }
 }

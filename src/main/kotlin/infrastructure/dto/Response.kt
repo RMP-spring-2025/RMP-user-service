@@ -1,20 +1,24 @@
 package org.healthapp.infrastructure.dto
 
 import kotlinx.serialization.Serializable
+import org.healthapp.util.UUIDSerializer
+import java.util.UUID
 
 @Serializable
 sealed class Response {
-    abstract val requestId: Long
+    abstract val requestId: UUID
 
     @Serializable
     data class CaloriesResponse(
-        override val requestId: Long,
+        @Serializable(with = UUIDSerializer::class)
+        override val requestId: UUID,
         val stats: List<StatEntryDTO>
     ) : Response()
 
     @Serializable
     data class SuccessResponse(
-        override val requestId: Long,
+        @Serializable(with = UUIDSerializer::class)
+        override val requestId: UUID,
         val message: String
     ) : Response()
 }

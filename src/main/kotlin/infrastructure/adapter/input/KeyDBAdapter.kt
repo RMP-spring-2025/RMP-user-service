@@ -7,6 +7,7 @@ import org.healthapp.infrastructure.adapter.input.interfaces.KeyDBPort
 import org.healthapp.infrastructure.adapter.output.KeyDBOutputAdapter
 import org.healthapp.infrastructure.handler.interfaces.HandleRegistry
 import org.healthapp.infrastructure.request.Request
+import org.healthapp.util.JsonSerializationConfig
 
 class KeyDBAdapter(private val keyDBPort: KeyDBPort, private val handlers: HandleRegistry) {
     fun startListening() = runBlocking {
@@ -16,7 +17,7 @@ class KeyDBAdapter(private val keyDBPort: KeyDBPort, private val handlers: Handl
                 try {
                     val parsedRequest = parseRequestType(request)
                     if (parsedRequest != null) {
-                        val handler = handlers.getHandler(parsedRequest.type)
+                        val handler = handlers.getHandler(parsedRequest.requestType)
                         if (handler != null) {
                             KeyDBOutputAdapter(keyDBPort).sendResponse(handler.handle(parsedRequest))
                         }
@@ -30,10 +31,9 @@ class KeyDBAdapter(private val keyDBPort: KeyDBPort, private val handlers: Handl
 
     private fun parseRequestType(request: String): Request? {
         return try {
-            println(Json.decodeFromString<Request>(request).toString())
-            Json.decodeFromString<Request>(request)
+            JsonSerializationConfig.json.decodeFromString<Request>(request)
         } catch (e: Exception) {
-            println("Parse Json request error $request")
+            println(e.printStackTrace())
             null
         }
     }
