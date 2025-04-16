@@ -12,8 +12,17 @@ services:
       - "5432:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
-      - ./docker/postgres/init/create_tables.sql:/docker-entrypoint-initdb.d/create_tables.sql
     restart: unless-stopped
+  liquibase:
+    image: liquibase/liquibase
+    depends_on:
+      - postgres
+    volumes:
+      - ./src/main/resources:/liquibase/changelog
+    command:
+      --defaultsFile=/liquibase/changelog/liquibase.properties
+      --searchPath=/liquibase/changelog/db/changelog
+      update
 
 volumes:
   postgres_data:
