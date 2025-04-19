@@ -2,10 +2,10 @@ package org.healthapp
 
 import org.healthapp.app.port.input.AddProductConsumptionPort
 import app.service.AddProductConsumptionService
+import org.healthapp.app.service.ProductStat
 import org.healthapp.infrastructure.adapter.input.FakeKeyDBPort
 import org.healthapp.infrastructure.adapter.input.KeyDBAdapter
 import org.healthapp.infrastructure.adapter.output.UserProductRepositoryImpl
-import org.healthapp.infrastructure.dto.RequestProductServiceDTO
 import org.healthapp.infrastructure.handler.AddProductConsumptionHandler
 import org.healthapp.infrastructure.handler.DefaultHandleRegistry
 import org.healthapp.infrastructure.handler.HandleRegistry
@@ -57,6 +57,6 @@ fun saveProductTest(){
 
 fun getCaloriesFromToTest(){
     val userProductRepositoryImpl = UserProductRepositoryImpl()
-    val products: List<RequestProductServiceDTO> = userProductRepositoryImpl.getCaloriesFromTo(1, "2025-03-29", "2025-04-12")
+    val products: List<ProductStat> = userProductRepositoryImpl.getStatsFromTo(1, "2025-03-29", "2025-04-12")
     products.forEach { it -> println(it) }
 }
