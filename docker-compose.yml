@@ -1,0 +1,28 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:latest
+    container_name: rmp_user_postgres
+    environment:
+      POSTGRES_USER: user_postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: user_db
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    restart: unless-stopped
+  liquibase:
+    image: liquibase/liquibase
+    depends_on:
+      - postgres
+    volumes:
+      - ./src/main/resources:/liquibase/changelog
+    command:
+      --defaultsFile=/liquibase/changelog/liquibase.properties
+      --searchPath=/liquibase/changelog/db/changelog
+      update
+
+volumes:
+  postgres_data:
