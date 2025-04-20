@@ -2,7 +2,7 @@ package org.healthapp.infrastructure.dto
 
 import kotlinx.serialization.Serializable
 import org.healthapp.util.UUIDSerializer
-import java.util.UUID
+import java.util.*
 
 @Serializable
 sealed class Response {

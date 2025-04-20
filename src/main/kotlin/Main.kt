@@ -5,39 +5,49 @@ import app.service.GetUserCaloriesService
 import kotlinx.coroutines.*
 import org.healthapp.app.port.input.AddProductConsumptionPort
 import org.healthapp.app.port.input.GetUserCaloriesPort
-import org.healthapp.infrastructure.adapter.input.KeyDBAdapter
-import org.healthapp.infrastructure.adapter.input.KeyDBPortImpl
+import org.healthapp.infrastructure.adapter.input.KeyDBInputAdapter
+import org.healthapp.infrastructure.adapter.input.RequestProcessor
+import org.healthapp.infrastructure.adapter.output.KeyDBOutputAdapter
+import org.healthapp.infrastructure.adapter.output.ResponseProcessor
 import org.healthapp.infrastructure.adapter.output.UserProductInMemoryRepositoryImpl
+import org.healthapp.infrastructure.adapter.output.interfaces.KeyDBOutputPort
 import org.healthapp.infrastructure.handler.DefaultHandleRegistry
 import org.healthapp.infrastructure.handler.handlers.AddProductConsumptionHandler
 import org.healthapp.infrastructure.handler.handlers.GetCaloriesHandler
 import org.healthapp.infrastructure.handler.interfaces.HandleRegistry
 import org.healthapp.infrastructure.handler.interfaces.RequestHandler
+import org.healthapp.util.KeyDBConnection
 import java.time.LocalDate
-import java.util.UUID
+import java.util.*
 import kotlin.random.Random
 
 fun main() {
     val scope = CoroutineScope(Dispatchers.Default + Job())
-    val realKeyDb = KeyDBPortImpl()
+//    val realKeyDb = KeyDBPortImpl()
 
-    val job = scope.launch {
-        sendPeriodicRequests(realKeyDb)
-    }
+    val connection = KeyDBConnection()
+    val inputPort = KeyDBInputAdapter(connection)
+    val outPutAdapter = KeyDBOutputAdapter(connection)
+    val outPort = ResponseProcessor(outPutAdapter)
+
+
+//    val job = scope.launch {
+//        sendPeriodicRequests(outPutAdapter)
+//    }
     val inMemRep = UserProductInMemoryRepositoryImpl()
     val addProductConsumptionService: AddProductConsumptionPort = AddProductConsumptionService(inMemRep)
     val getCaloriesService: GetUserCaloriesPort = GetUserCaloriesService(inMemRep)
     val handlers: Map<String, RequestHandler> = mapOf(
-        "add_product" to AddProductConsumptionHandler(addProductConsumptionService),
-        "get_calories" to GetCaloriesHandler(getCaloriesService)
+        "add_product" to AddProductConsumptionHandler(addProductConsumptionService, outPort),
+        "get_calories" to GetCaloriesHandler(getCaloriesService, outPort)
     )
 
     val handleRegistry: HandleRegistry = DefaultHandleRegistry(handlers)
-    val adapter = KeyDBAdapter(realKeyDb, handleRegistry)
-    adapter.startListening()
+    val requestProcessor = RequestProcessor(KeyDBInputAdapter(connection = connection), handleRegistry)
+    requestProcessor.startListening()
 }
 
-suspend fun sendPeriodicRequests(keyDb: KeyDBPortImpl) {
+suspend fun sendPeriodicRequests(keyDb: KeyDBOutputPort) {
 
     var addProductCount = 0
 

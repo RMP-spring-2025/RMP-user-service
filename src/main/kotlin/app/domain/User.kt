@@ -1,3 +1,5 @@
 package org.healthapp.app.domain
 
-data class User(val id: Long, val username: String)
+import java.util.UUID
+
+data class User(val id: UUID, val username: String)
