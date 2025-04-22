@@ -1,12 +1,12 @@
 package org.healthapp.infrastructure.handler.handlers
 
+import ResponseAwaiter
 import kotlinx.coroutines.time.withTimeoutOrNull
 import org.healthapp.app.port.input.GetUserCaloriesPort
 import org.healthapp.infrastructure.adapter.output.ResponseProcessor
 import org.healthapp.infrastructure.adapter.output.interfaces.KeyDBOutputPort
 import org.healthapp.infrastructure.dto.ProductStatDTO
 import org.healthapp.infrastructure.response.Response
-import org.healthapp.infrastructure.handler.ResponseAwaiter
 import org.healthapp.infrastructure.handler.interfaces.RequestHandler
 import org.healthapp.infrastructure.request.ExternalRequest
 import org.healthapp.infrastructure.request.Request
@@ -33,12 +33,9 @@ class GetCaloriesHandler(
 
         val correlationId = outPort.sendProductRequest( request)
 
-        val productResponse = withTimeoutOrNull(Duration.ofSeconds(5)) {
-            responseAwaiter.awaitResponse(correlationId).await()
-        }
-        if (productResponse == null) {
-            return
-        }
+        val productResponse = responseAwaiter.awaitResponse(correlationId).await()
+
+        println("Received response: $productResponse")
 
         val externalResponse = try {
             JsonSerializationConfig.json.decodeFromString<ExternalResponse>(productResponse)

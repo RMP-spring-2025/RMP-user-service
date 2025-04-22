@@ -1,5 +1,6 @@
 package org.healthapp
 
+import ResponseAwaiter
 import org.healthapp.app.port.input.AddProductConsumptionPort
 import app.service.AddProductConsumptionService
 import app.service.GetUserCaloriesService
@@ -11,7 +12,6 @@ import org.healthapp.infrastructure.adapter.output.KeyDBOutputAdapter
 import org.healthapp.infrastructure.adapter.output.ResponseProcessor
 import org.healthapp.infrastructure.adapter.output.UserProductRepositoryImpl
 import org.healthapp.infrastructure.handler.DefaultHandleRegistry
-import org.healthapp.infrastructure.handler.ResponseAwaiter
 import org.healthapp.infrastructure.handler.handlers.AddProductConsumptionHandler
 import org.healthapp.infrastructure.handler.handlers.GetCaloriesHandler
 import org.healthapp.infrastructure.handler.interfaces.RequestHandler
@@ -25,12 +25,13 @@ import java.util.UUID
 import kotlin.reflect.typeOf
 
 fun main() {
+
     saveProductTest()
 }
 
 fun saveProductTest(){
     val reqId = UUID.randomUUID()
-
+    val req = "{\"requestType\":\"get_calories\",\"requestId\":\"384cdda0-6127-408b-b049-eaba3a0375ff\",\"userId\":\"d39fb70b-2477-48e1-bc49-2bdbf742a12d\",\"from\":[2025,4,24,0,0],\"to\":[2025,4,24,21,20,20]}".trimIndent()
     val connection = KeyDBConnection()
     val responseAwaiter: ResponseAwaiter = ResponseAwaiter()
     val outputAdapter = KeyDBOutputAdapter(connection)
@@ -48,6 +49,6 @@ fun saveProductTest(){
     val handlerRegistry = DefaultHandleRegistry(handlers)
 
     val input = RequestProcessor(KeyDBInputAdapter(connection), handlerRegistry, responseAwaiter)
-
     input.startListening()
+
 }
