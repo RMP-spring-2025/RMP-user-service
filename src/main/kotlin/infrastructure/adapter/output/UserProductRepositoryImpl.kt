@@ -5,17 +5,13 @@ import org.healthapp.app.port.output.UserProductRepository
 import org.healthapp.infrastructure.dto.ProductStatDTO
 import org.healthapp.infrastructure.persistance.DatabaseConfiguration
 import org.healthapp.infrastructure.persistance.Queries
-import java.sql.Timestamp
 import java.time.LocalDateTime
-import java.time.format.DateTimeFormatter
-import java.util.UUID
+import java.util.*
 
 
-
-
-class UserProductRepositoryImpl: UserProductRepository {
+class UserProductRepositoryImpl : UserProductRepository {
     override fun saveUserConsumedProduct(consumedProduct: ProductConsumption): Boolean {
-        return try{
+        return try {
             DatabaseConfiguration.getConnection().use { connection ->
                 val statement = connection.prepareStatement(Queries.SAVE_USER_CONSUMED_PRODUCT.query.trimIndent())
                 statement.setObject(1, consumedProduct.user.id)
@@ -24,8 +20,7 @@ class UserProductRepositoryImpl: UserProductRepository {
                 statement.setObject(4, consumedProduct.timeStamp)
                 statement.executeUpdate() > 0
             }
-        }
-        catch (e: Exception){
+        } catch (e: Exception) {
             println("DataBase error: ${e.message}")
             false
         }
@@ -49,7 +44,8 @@ class UserProductRepositoryImpl: UserProductRepository {
                         result.add(
                             ProductStatDTO(
                                 productId = rs.getLong("product_id"),
-                                time = rs.getObject("timestamp", LocalDateTime::class.java).toString(), // Получение LocalDateTime
+                                time = rs.getObject("timestamp", LocalDateTime::class.java)
+                                    .toString(), // Получение LocalDateTime
                                 massConsumed = rs.getDouble("mass_consumed")
                             )
                         )

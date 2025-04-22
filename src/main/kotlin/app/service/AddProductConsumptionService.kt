@@ -8,7 +8,7 @@ import org.healthapp.infrastructure.dto.ProductConsumptionDTO
 
 class AddProductConsumptionService(private val userProductRepository: UserProductRepository) :
     AddProductConsumptionPort {
-    override fun addUserConsumedProduct(consumedProduct: ProductConsumptionDTO) : Boolean {
+    override fun addUserConsumedProduct(consumedProduct: ProductConsumptionDTO): Boolean {
 //        find user by user ID in DB
         val user = User(consumedProduct.userId, "User_${consumedProduct.userId}")
         val consumption = ProductConsumption(

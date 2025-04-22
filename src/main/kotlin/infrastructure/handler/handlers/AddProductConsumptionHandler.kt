@@ -3,10 +3,9 @@ package org.healthapp.infrastructure.handler.handlers
 import org.healthapp.app.port.input.AddProductConsumptionPort
 import org.healthapp.infrastructure.adapter.output.ResponseProcessor
 import org.healthapp.infrastructure.dto.ProductConsumptionDTO
-import org.healthapp.infrastructure.response.Response
-
 import org.healthapp.infrastructure.handler.interfaces.RequestHandler
 import org.healthapp.infrastructure.request.Request
+import org.healthapp.infrastructure.response.Response
 
 class AddProductConsumptionHandler(
     private val addProductConsumptionPort: AddProductConsumptionPort,
@@ -25,7 +24,7 @@ class AddProductConsumptionHandler(
                 request.time
             )
         )
-        if (res){
+        if (res) {
             outPort.sendResponse(Response.SuccessResponse(request.requestId, "Success"))
         } else {
             outPort.sendResponse(Response.FailureResponse(request.requestId, "Add product failed"))

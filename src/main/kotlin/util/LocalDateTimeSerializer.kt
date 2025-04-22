@@ -1,16 +1,9 @@
 import kotlinx.serialization.KSerializer
-import kotlinx.serialization.Serializer
 import kotlinx.serialization.descriptors.PrimitiveKind
 import kotlinx.serialization.descriptors.PrimitiveSerialDescriptor
-import kotlinx.serialization.descriptors.SerialKind
 import kotlinx.serialization.encoding.Decoder
 import kotlinx.serialization.encoding.Encoder
-import kotlinx.serialization.json.JsonArray
-import kotlinx.serialization.json.JsonDecoder
-import kotlinx.serialization.json.JsonPrimitive
-import kotlinx.serialization.json.int
-import kotlinx.serialization.json.jsonArray
-import kotlinx.serialization.json.jsonPrimitive
+import kotlinx.serialization.json.*
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 
@@ -51,9 +44,13 @@ object LocalDateTimeSerializer : KSerializer<LocalDateTime> {
                 try {
                     LocalDateTime.parse(jsonElement.jsonPrimitive.content, formatter)
                 } catch (e: Exception) {
-                    throw IllegalArgumentException("Invalid ISO-8601 string format: ${jsonElement.jsonPrimitive.content}", e)
+                    throw IllegalArgumentException(
+                        "Invalid ISO-8601 string format: ${jsonElement.jsonPrimitive.content}",
+                        e
+                    )
                 }
             }
+
             else -> throw IllegalArgumentException("Unsupported JSON format for LocalDateTime: $jsonElement")
         }
     }

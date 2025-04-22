@@ -1,20 +1,16 @@
 package org.healthapp.infrastructure.handler.handlers
 
 import ResponseAwaiter
-import kotlinx.coroutines.time.withTimeoutOrNull
 import org.healthapp.app.port.input.GetUserCaloriesPort
-import org.healthapp.infrastructure.adapter.output.ResponseProcessor
 import org.healthapp.infrastructure.adapter.output.interfaces.KeyDBOutputPort
 import org.healthapp.infrastructure.dto.ProductStatDTO
-import org.healthapp.infrastructure.response.Response
 import org.healthapp.infrastructure.handler.interfaces.RequestHandler
 import org.healthapp.infrastructure.request.ExternalRequest
 import org.healthapp.infrastructure.request.Request
 import org.healthapp.infrastructure.response.ExternalResponse
-import org.healthapp.util.ExternalJsonSerializationConfig
+import org.healthapp.infrastructure.response.Response
 import org.healthapp.util.JsonSerializationConfig
-import java.time.Duration
-import java.util.UUID
+import java.util.*
 
 class GetCaloriesHandler(
     private val getUserCaloriesPort: GetUserCaloriesPort,
@@ -31,7 +27,7 @@ class GetCaloriesHandler(
 
         val request = generateGetProductByIDRequest(productStatsDTO)
 
-        val correlationId = outPort.sendProductRequest( request)
+        val correlationId = outPort.sendProductRequest(request)
 
         val productResponse = responseAwaiter.awaitResponse(correlationId).await()
 
@@ -50,7 +46,7 @@ class GetCaloriesHandler(
 
     }
 
-    private fun generateGetProductByIDRequest(stats: List<ProductStatDTO>) : ExternalRequest{
+    private fun generateGetProductByIDRequest(stats: List<ProductStatDTO>): ExternalRequest {
         val productId = stats.map { it.productId }
 
         return ExternalRequest.GetProductById(UUID.randomUUID(), productId)

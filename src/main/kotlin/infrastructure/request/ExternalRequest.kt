@@ -5,7 +5,7 @@ import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.JsonClassDiscriminator
 import org.healthapp.util.UUIDSerializer
-import java.util.UUID
+import java.util.*
 
 @OptIn(ExperimentalSerializationApi::class)
 @Serializable

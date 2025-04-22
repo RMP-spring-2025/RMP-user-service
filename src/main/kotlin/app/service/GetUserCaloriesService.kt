@@ -5,10 +5,9 @@ import org.healthapp.app.port.output.UserProductRepository
 import org.healthapp.infrastructure.dto.ProductStatDTO
 import org.healthapp.infrastructure.response.ExternalResponse
 import org.healthapp.infrastructure.response.Product
-import org.healthapp.infrastructure.response.Response
 import org.healthapp.infrastructure.response.StatEntryDTO
 import java.time.LocalDateTime
-import java.util.UUID
+import java.util.*
 
 
 class GetUserCaloriesService(private val userProductRepository: UserProductRepository) : GetUserCaloriesPort {
@@ -20,7 +19,7 @@ class GetUserCaloriesService(private val userProductRepository: UserProductRepos
     override fun calculateCalories(
         productStats: List<ProductStatDTO>,
         response: ExternalResponse
-    ) : List<StatEntryDTO> {
+    ): List<StatEntryDTO> {
         val productMap = response.products.associateBy { it.productId }
 
         val stats = productStats.mapNotNull { stat ->

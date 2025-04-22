@@ -1,5 +1,6 @@
 package org.healthapp.infrastructure.dto
 
+import LocalDateTimeSerializer
 import kotlinx.serialization.Serializable
 import org.healthapp.util.UUIDSerializer
 import java.time.LocalDateTime

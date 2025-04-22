@@ -1,12 +1,11 @@
 package org.healthapp.infrastructure.adapter.output
 
 import org.healthapp.infrastructure.adapter.output.interfaces.KeyDBOutputPort
-import org.healthapp.infrastructure.response.Response
 import org.healthapp.infrastructure.request.ExternalRequest
+import org.healthapp.infrastructure.response.Response
 import org.healthapp.util.ExternalJsonSerializationConfig
 import org.healthapp.util.JsonSerializationConfig
 import org.healthapp.util.KeyDBConnection
-import java.util.UUID
 
 class KeyDBOutputAdapter(
     private val connection: KeyDBConnection,

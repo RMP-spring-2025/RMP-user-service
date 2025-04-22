@@ -2,9 +2,6 @@ package org.healthapp.infrastructure.response
 
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
-import org.healthapp.util.UUIDSerializer
-import java.util.UUID
-
 
 
 @Serializable

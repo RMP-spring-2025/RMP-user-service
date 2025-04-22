@@ -1,23 +1,22 @@
 package org.healthapp.infrastructure.adapter.input
 
 import ResponseAwaiter
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.SupervisorJob
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.*
 import org.healthapp.infrastructure.adapter.input.interfaces.KeyDBInputPort
 import org.healthapp.infrastructure.handler.interfaces.HandleRegistry
 import org.healthapp.infrastructure.request.Request
 import org.healthapp.infrastructure.response.ExternalResponse
 import org.healthapp.util.JsonSerializationConfig
-import java.util.UUID
 
-class RequestProcessor(private val keyDBPort: KeyDBInputPort, private val handlers: HandleRegistry, private val responseAwaiter: ResponseAwaiter) {
+class RequestProcessor(
+    private val keyDBPort: KeyDBInputPort,
+    private val handlers: HandleRegistry,
+    private val responseAwaiter: ResponseAwaiter
+) {
     private val scope = CoroutineScope(Dispatchers.IO + SupervisorJob())
-    fun startListening()  {
+    fun startListening() {
         scope.launch {
-            while (true){
+            while (true) {
                 val response = keyDBPort.receiveExternalResponse() ?: continue
                 println(response)
                 var correlationId: String? = null
@@ -25,7 +24,7 @@ class RequestProcessor(private val keyDBPort: KeyDBInputPort, private val handle
                     val parsedResponse = JsonSerializationConfig.json.decodeFromString<ExternalResponse>(response)
                     correlationId = parsedResponse.requestId
                     responseAwaiter.completeResponse(parsedResponse.requestId, response)
-                } catch (e: Exception){
+                } catch (e: Exception) {
                     println("error parsing response $response")
                     responseAwaiter.failResponse(correlationId, e)
                 }
