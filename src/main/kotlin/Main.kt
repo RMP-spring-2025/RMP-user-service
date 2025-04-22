@@ -1,141 +1,53 @@
 package org.healthapp
 
+import org.healthapp.app.port.input.AddProductConsumptionPort
 import app.service.AddProductConsumptionService
 import app.service.GetUserCaloriesService
-import kotlinx.coroutines.*
-import org.healthapp.app.port.input.AddProductConsumptionPort
 import org.healthapp.app.port.input.GetUserCaloriesPort
+import org.healthapp.app.port.output.UserProductRepository
 import org.healthapp.infrastructure.adapter.input.KeyDBInputAdapter
 import org.healthapp.infrastructure.adapter.input.RequestProcessor
 import org.healthapp.infrastructure.adapter.output.KeyDBOutputAdapter
 import org.healthapp.infrastructure.adapter.output.ResponseProcessor
-import org.healthapp.infrastructure.adapter.output.UserProductInMemoryRepositoryImpl
-import org.healthapp.infrastructure.adapter.output.interfaces.KeyDBOutputPort
-import org.healthapp.app.service.ProductStat
 import org.healthapp.infrastructure.adapter.output.UserProductRepositoryImpl
 import org.healthapp.infrastructure.handler.DefaultHandleRegistry
+import org.healthapp.infrastructure.handler.ResponseAwaiter
 import org.healthapp.infrastructure.handler.handlers.AddProductConsumptionHandler
 import org.healthapp.infrastructure.handler.handlers.GetCaloriesHandler
-import org.healthapp.infrastructure.handler.interfaces.HandleRegistry
 import org.healthapp.infrastructure.handler.interfaces.RequestHandler
-import org.healthapp.util.KeyDBConnection
-import java.time.LocalDate
-import java.util.*
-import kotlin.random.Random
 import org.healthapp.infrastructure.persistance.DatabaseConfiguration
+import org.healthapp.infrastructure.request.Request
+import org.healthapp.infrastructure.response.Response
+import org.healthapp.util.JsonSerializationConfig
+import org.healthapp.util.KeyDBConnection
+import java.time.LocalDateTime
+import java.util.UUID
+import kotlin.reflect.typeOf
 
 fun main() {
-    val scope = CoroutineScope(Dispatchers.Default + Job())
-//    val realKeyDb = KeyDBPortImpl()
-
-    val connection = KeyDBConnection()
-    val inputPort = KeyDBInputAdapter(connection)
-    val outPutAdapter = KeyDBOutputAdapter(connection)
-    val outPort = ResponseProcessor(outPutAdapter)
-    getCaloriesFromToTest()
-}
-
-fun checkConnection(){
-    val connection = DatabaseConfiguration.getConnection()
-
-    val statement = connection.createStatement()
-    val resultSet = statement.executeQuery("SELECT version()")
-
-    while (resultSet.next()) {
-        println("PostgreSQL version: ${resultSet.getString(1)}")
-    }
-
-    resultSet.close()
-    statement.close()
-    connection.close()
+    saveProductTest()
 }
 
 fun saveProductTest(){
-    val jsonAddProduct = """
-        {
-            "request_id": 123,
-            "user_id": 1,
-            "type": "add_product",
-            "product_id": 123,
-            "date": "2025-04-12",
-            "mass_consumed": 20.0
-        }
-    """.trimIndent()
-    val addProductConsumptionService: AddProductConsumptionPort = AddProductConsumptionService(UserProductRepositoryImpl())
+    val reqId = UUID.randomUUID()
 
+    val connection = KeyDBConnection()
+    val responseAwaiter: ResponseAwaiter = ResponseAwaiter()
+    val outputAdapter = KeyDBOutputAdapter(connection)
+    val outPort = ResponseProcessor(outputAdapter)
+    val userProductRepository: UserProductRepository = UserProductRepositoryImpl()
+    val addProductConsumptionService: AddProductConsumptionPort = AddProductConsumptionService(userProductRepository)
+    val getCaloriesService: GetUserCaloriesPort = GetUserCaloriesService(userProductRepository)
 
-//    val job = scope.launch {
-//        sendPeriodicRequests(outPutAdapter)
-//    }
-    val inMemRep = UserProductInMemoryRepositoryImpl()
-    val getCaloriesService: GetUserCaloriesPort = GetUserCaloriesService(inMemRep)
     val handlers: Map<String, RequestHandler> = mapOf(
         "add_product" to AddProductConsumptionHandler(addProductConsumptionService, outPort),
-        "get_calories" to GetCaloriesHandler(getCaloriesService, outPort)
+        "get_calories" to GetCaloriesHandler(getCaloriesService, outputAdapter, responseAwaiter)
     )
 
-    val handleRegistry: HandleRegistry = DefaultHandleRegistry(handlers)
-    val requestProcessor = RequestProcessor(KeyDBInputAdapter(connection = connection), handleRegistry)
-    requestProcessor.startListening()
-}
 
-suspend fun sendPeriodicRequests(keyDb: KeyDBOutputPort) {
+    val handlerRegistry = DefaultHandleRegistry(handlers)
 
-    var addProductCount = 0
+    val input = RequestProcessor(KeyDBInputAdapter(connection), handlerRegistry, responseAwaiter)
 
-    while (true) {
-        var requestId = UUID.randomUUID()
-        if (addProductCount < 2) {
-
-            val newRequest = buildAddProductRequest(requestId)
-            keyDb.sendRequest(newRequest)
-            println("Sent add_product request with ID: $requestId")
-            addProductCount++
-        } else {
-
-            val getCaloriesRequest = buildGetCaloriesRequest(requestId)
-            keyDb.sendRequest(getCaloriesRequest)
-            println("Sent get_calories request with ID: $requestId")
-            addProductCount = 0
-        }
-        delay(1000)
-    }
-}
-
-fun buildAddProductRequest(requestId: UUID): String {
-    val currentDate = LocalDate.now().toString()
-    val productId = Random.nextInt(1, 5)
-    val massConsumed = Random.nextDouble(1.0, 100.0)
-
-    return """
-        {
-            "request_id": $requestId,
-            "user_id": 42,
-            "requestType": "add_product",
-            "product_id": $productId,
-            "date": "$currentDate",
-            "mass_consumed": $massConsumed
-        }
-    """.trimIndent()
-}
-
-fun buildGetCaloriesRequest(requestId: UUID): String {
-    val fromDate = LocalDate.now().minusDays(0).toString()
-    val toDate = LocalDate.now().toString()
-
-    return """
-    {
-        "requestType": "get_calories",
-        "request_id": $requestId,
-        "user_id": 42,
-        "from": "$fromDate",
-        "to": "$toDate"
-    }
-""".trimIndent()
-}
-
-fun getCaloriesFromToTest(){
-    val userProductRepositoryImpl = UserProductRepositoryImpl()
-    val products: List<ProductStat> = userProductRepositoryImpl.getStatsFromTo(1, "2025-03-29", "2025-04-12")
-    products.forEach { it -> println(it) }
+    input.startListening()
 }

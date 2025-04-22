@@ -1,9 +1,10 @@
 package org.healthapp.app.domain
 
+import java.time.LocalDateTime
+
 data class ProductConsumption(
-    val id: Long,
     val user: User,
     val productId: Long,
     val mass: Double,
-    val timeStamp: String
+    val timeStamp: LocalDateTime
 )

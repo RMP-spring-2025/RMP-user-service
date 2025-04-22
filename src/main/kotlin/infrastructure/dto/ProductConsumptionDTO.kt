@@ -2,15 +2,15 @@ package org.healthapp.infrastructure.dto
 
 import kotlinx.serialization.Serializable
 import org.healthapp.util.UUIDSerializer
+import java.time.LocalDateTime
 import java.util.*
 
 @Serializable
-class ProductConsumptionDto(
-    @Serializable(with = UUIDSerializer::class)
-    val requestId: UUID,
+class ProductConsumptionDTO(
     @Serializable(with = UUIDSerializer::class)
     val userId: UUID,
     val productId: Long,
     val massConsumed: Double,
-    val timestamp: String
+    @Serializable(with = LocalDateTimeSerializer::class)
+    val timestamp: LocalDateTime
 )

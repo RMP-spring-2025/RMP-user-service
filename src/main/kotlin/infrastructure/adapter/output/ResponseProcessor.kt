@@ -2,7 +2,7 @@ package org.healthapp.infrastructure.adapter.output
 
 
 import org.healthapp.infrastructure.adapter.output.interfaces.KeyDBOutputPort
-import org.healthapp.infrastructure.dto.Response
+import org.healthapp.infrastructure.response.Response
 
 class ResponseProcessor(
     private val keyDBPort: KeyDBOutputPort,

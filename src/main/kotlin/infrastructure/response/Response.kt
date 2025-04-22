@@ -1,4 +1,4 @@
-package org.healthapp.infrastructure.dto
+package org.healthapp.infrastructure.response
 
 import kotlinx.serialization.Serializable
 import org.healthapp.util.UUIDSerializer
@@ -21,6 +21,15 @@ sealed class Response {
         override val requestId: UUID,
         val message: String
     ) : Response()
+
+    @Serializable
+    data class FailureResponse(
+        @Serializable(with = UUIDSerializer::class)
+        override val requestId: UUID,
+        val message: String
+    ) : Response()
+
+
 }
 
 

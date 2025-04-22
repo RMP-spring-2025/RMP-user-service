@@ -1,10 +1,12 @@
 package org.healthapp.infrastructure.request
 
+
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.JsonClassDiscriminator
 import org.healthapp.util.UUIDSerializer
+import java.time.LocalDateTime
 import java.util.*
 
 @OptIn(ExperimentalSerializationApi::class)
@@ -24,7 +26,8 @@ sealed class Request {
         @SerialName("userId") override val userId: UUID,
         override val requestType: String,
         @SerialName("productId") val productId: Long,
-        val time: String,
+        @Serializable(with = LocalDateTimeSerializer::class)
+        val time: LocalDateTime,
         @SerialName("massConsumed") val massConsumed: Double
     ) : Request()
 
@@ -36,7 +39,9 @@ sealed class Request {
         @Serializable(with = UUIDSerializer::class)
         @SerialName("userId") override val userId: UUID,
         override val requestType: String,
-        val from: String,
-        val to: String
+        @Serializable(with = LocalDateTimeSerializer::class)
+        val from: LocalDateTime,
+        @Serializable(with = LocalDateTimeSerializer::class)
+        val to: LocalDateTime
     ) : Request()
 }

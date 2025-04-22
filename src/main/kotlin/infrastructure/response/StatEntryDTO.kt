@@ -1,4 +1,4 @@
-package org.healthapp.infrastructure.dto
+package org.healthapp.infrastructure.response
 
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable

@@ -24,5 +24,17 @@ services:
       --searchPath=/liquibase/changelog/db/changelog
       update
 
+
+  keydb:
+    image: eqalpha/keydb
+    container_name: mykeydb
+    ports:
+      - "6379:6379"
+    volumes:
+      - keydb-data:/data
+    command: keydb-server /etc/keydb/keydb.conf
+    restart: unless-stopped
+
 volumes:
   postgres_data:
+  keydb-data:

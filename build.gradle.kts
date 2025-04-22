@@ -17,6 +17,8 @@ dependencies {
     implementation("io.lettuce:lettuce-core:6.2.3.RELEASE")
     implementation("org.postgresql:postgresql:42.7.5")
     implementation("org.liquibase:liquibase-core:4.17.0")
+    implementation("com.fasterxml.jackson.dataformat:jackson-dataformat-xml")
+    implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.17.1")
 
 }
 
