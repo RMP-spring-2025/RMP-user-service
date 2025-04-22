@@ -18,8 +18,7 @@ import org.healthapp.infrastructure.handler.interfaces.RequestHandler
 import org.healthapp.util.KeyDBConnection
 
 fun main() {
-
-    val connection = KeyDBConnection()
+    val connection = KeyDBConnection(host = "mykeydb")
     val responseAwaiter = ResponseAwaiter()
     val outputAdapter = KeyDBOutputAdapter(connection)
     val outPort = ResponseProcessor(outputAdapter)

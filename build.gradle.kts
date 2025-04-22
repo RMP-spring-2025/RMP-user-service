@@ -1,6 +1,10 @@
+import org.gradle.internal.declarativedsl.parsing.main
+
 plugins {
     kotlin("jvm") version "2.1.10"
     kotlin("plugin.serialization") version "2.1.20"
+    id("com.github.johnrengelman.shadow") version "8.1.1"
+    application
 }
 
 group = "org.healthapp"
@@ -21,10 +25,23 @@ dependencies {
     implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.17.1")
 
 }
-
+application {
+    mainClass.set("org.healthapp.MainKt")
+}
 tasks.test {
     useJUnitPlatform()
 }
 kotlin {
     jvmToolchain(21)
+}
+tasks.shadowJar {
+    archiveBaseName.set("RMP-user-service") // Базовое имя JAR
+    archiveClassifier.set("all")            // Добавит суффикс "-all"
+    archiveVersion.set("")                 // Убирает версию из имени (опционально)
+
+    manifest {
+        attributes["Main-Class"] = "org.healthapp.MainKt" // Укажите ваш главный класс
+    }
+
+    mergeServiceFiles() // Важно для совместимости с ServiceLoader (например, для Jackson)
 }

@@ -1,6 +1,16 @@
 version: '3.8'
 
 services:
+  app:
+    build: .
+    container_name: user-service
+    ports:
+      - "8080:8080"
+    depends_on:
+      - postgres
+      - liquibase
+      - keydb
+    restart: unless-stopped
   postgres:
     image: postgres:latest
     container_name: rmp_user_postgres
