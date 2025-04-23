@@ -16,12 +16,12 @@ data class Product(
     @SerialName("product_id")
     val productId: Long,
     val name: String,
-    val calories: Int,
+    val calories: Double,
     @SerialName("B")
-    val proteins: Int? = null,
+    val B: Double? = null,
     @SerialName("Z")
-    val fats: Int? = null,
+    val Z: Double? = null,
     @SerialName("U")
-    val carbohydrates: Int? = null,
-    val mass: Int
+    val U: Double? = null,
+    val mass: Double
 )

@@ -18,7 +18,8 @@ import org.healthapp.infrastructure.handler.interfaces.RequestHandler
 import org.healthapp.util.KeyDBConnection
 
 fun main() {
-    val connection = KeyDBConnection(host = "mykeydb")
+    val getCalReq = "{\"requestType\":\"get_calories\",\"requestId\":\"3b762ffd-8a56-4a9e-902a-2b0e3803a485\",\"userId\":\"d39fb70b-2477-48e1-bc49-2bdbf742a12d\",\"from\":[2025,4,24,20,0],\"to\":[2025,4,24,21,20,20]}".trimIndent()
+    val connection = KeyDBConnection()
     val responseAwaiter = ResponseAwaiter()
     val outputAdapter = KeyDBOutputAdapter(connection)
     val outPort = ResponseProcessor(outputAdapter)
@@ -33,7 +34,8 @@ fun main() {
 
 
     val handlerRegistry = DefaultHandleRegistry(handlers)
-
+    outputAdapter.sendRequest(getCalReq)
+    outputAdapter.sendRequest(getCalReq)
     val input = RequestProcessor(KeyDBInputAdapter(connection), handlerRegistry, responseAwaiter)
     input.startListening()
 }

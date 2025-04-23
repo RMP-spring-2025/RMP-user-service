@@ -9,15 +9,16 @@ import java.util.*
 
 @OptIn(ExperimentalSerializationApi::class)
 @Serializable
-@JsonClassDiscriminator("requestType")
+@JsonClassDiscriminator("type")
 sealed class ExternalRequest {
     abstract val requestId: UUID
 
     @Serializable
-    @SerialName("get_product_by_id")
+    @SerialName("get_products_by_ids")
     data class GetProductById(
         @Serializable(with = UUIDSerializer::class)
         override val requestId: UUID,
+        @SerialName("ids")
         val productId: List<Long>
     ) : ExternalRequest()
 }
