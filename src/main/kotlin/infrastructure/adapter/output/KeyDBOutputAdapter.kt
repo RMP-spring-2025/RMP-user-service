@@ -15,7 +15,6 @@ class KeyDBOutputAdapter(
 ) : KeyDBOutputPort {
     override fun sendResponse(response: Response) {
         val jsonString = JsonSerializationConfig.json.encodeToString(response)
-        println(jsonString)
         connection.commands.lpush(responseQueue, jsonString)
     }
 
