@@ -5,8 +5,8 @@ import org.healthapp.util.KeyDBConnection
 
 class KeyDBInputAdapter(
     private val connection: KeyDBConnection,
-    private val requestQueue: String = "user_request_list",
-    private val productResponseQueue: String = "user_service_product_responses"
+    private val requestQueue: String = "user_service_requests",
+    private val productResponseQueue: String = "user_service_response"
 ) : KeyDBInputPort {
     override suspend fun receiveRequest(): String? {
         val req = connection.commands.brpop(1, requestQueue)?.value

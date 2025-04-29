@@ -18,10 +18,10 @@ data class Product(
     val name: String,
     val calories: Double,
     @SerialName("B")
-    val proteins: Double? = null,
+    val B: Double? = null,
     @SerialName("Z")
-    val fats: Double? = null,
+    val Z: Double? = null,
     @SerialName("U")
-    val carbohydrates: Double? = null,
+    val U: Double? = null,
     val mass: Double
 )

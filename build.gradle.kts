@@ -1,11 +1,6 @@
-//import org.gradle.internal.declarativedsl.parsing.main
-
 plugins {
     kotlin("jvm") version "2.1.10"
     kotlin("plugin.serialization") version "2.1.20"
-    id("com.github.johnrengelman.shadow") version "8.1.1"
-    id("org.liquibase.gradle") version "2.2.0"
-    application
 }
 
 group = "org.healthapp"
@@ -13,10 +8,6 @@ version = "1.0-SNAPSHOT"
 
 repositories {
     mavenCentral()
-}
-
-configurations {
-    liquibaseRuntime
 }
 
 dependencies {
