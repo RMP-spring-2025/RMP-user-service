@@ -1,35 +1,91 @@
 package org.healthapp
 
-import org.healthapp.app.port.input.AddProductConsumptionPort
+import ResponseAwaiter
 import app.service.AddProductConsumptionService
-import org.healthapp.infrastructure.adapter.input.FakeKeyDBPort
-import org.healthapp.infrastructure.adapter.input.KeyDBAdapter
-import org.healthapp.infrastructure.adapter.output.UserProductInMemoryRepositoryImpl
-import org.healthapp.infrastructure.handler.AddProductConsumptionHandler
+import app.service.GetUserCaloriesService
+import org.healthapp.app.port.input.*
+import org.healthapp.app.port.output.UserDataRepository
+import org.healthapp.app.port.output.UserProductRepository
+import org.healthapp.app.service.AddUserService
+import org.healthapp.app.service.CalculateCaloriesService
+import org.healthapp.app.service.GetUserIdsService
+import org.healthapp.app.service.UserWeightService
+import org.healthapp.infrastructure.adapter.input.KeyDBInputAdapter
+import org.healthapp.infrastructure.adapter.input.RequestProcessor
+import org.healthapp.infrastructure.adapter.output.*
+import org.healthapp.infrastructure.adapter.output.interfaces.ExternalProductPort
 import org.healthapp.infrastructure.handler.DefaultHandleRegistry
-import org.healthapp.infrastructure.handler.HandleRegistry
-import org.healthapp.infrastructure.handler.RequestHandler
+import org.healthapp.infrastructure.handler.handlers.*
+import org.healthapp.infrastructure.handler.interfaces.RequestHandler
+import org.healthapp.util.KeyDBConnection
+import java.util.*
+import kotlin.random.Random
 
 fun main() {
-    val jsonAddProduct = """
+    "{\"productId\":45,\"time\":\"2025-04-24T20:36:44\",\"massConsumed\":432543.0,\"requestType\":\"add_product\",\"requestId\":\"e17c5fb2-14d8-4bda-a094-bfb3a8e10d29\",\"userId\":\"d39fb70b-2477-48e1-bc49-2bdbf742a12d\"}".trimIndent()
+    "{\"requestType\":\"get_calories\",\"requestId\":\"9569e7cd-5627-4423-97d8-2c36679e4e32\",\"userId\":\"d39fb70b-2477-48e1-bc49-2bdbf742a12d\",\"from\":[2025,4,24,20,0],\"to\":[2025,4,24,21,20,20]}".trimIndent()
+    "{\"requestType\":\"get_products\",\"requestId\":\"fec2298a-6369-4e98-850d-18098ed5957b\",\"userId\":\"d39fb70b-2477-48e1-bc49-2bdbf742a12d\",\"from\":[2025,4,24,20,0],\"to\":[2025,4,24,21,20,20]}".trimIndent()
+    """
         {
-            "request_id": 123,
-            "user_id": 42,
-            "type": "add_product",
-            "product_id": 123,
-            "date": "2025-03-30",
-            "mass_consumed": 12.0
+          "requestType": "add_user",
+          "requestId": "${UUID.randomUUID()}",
+          "userId": "d39fb70b-2477-48e1-bc49-2bdbf742a12d",
+          "username": "John Doe",
+          "age": 30,
+          "height": 175
         }
     """.trimIndent()
-    val fakeKeyDB = FakeKeyDBPort()
-    fakeKeyDB.addRequest(jsonAddProduct)
+    """
+        {
+            "requestType": "add_weight_statistic",
+            "requestId": "${UUID.randomUUID()}",
+            "userId": "d39fb70b-2477-48e1-bc49-2bdbf742a12d",
+            "weight": ${Random.nextDouble()},
+            "time": "2025-04-24T20:36:44"
+        }
+    """.trimIndent()
+    val getWeightStatRequest = """
+        {   
+            "requestId": "${UUID.randomUUID()}",
+            "userId": "d39fb70b-2477-48e1-bc49-2bdbf742a12d",
+            "requestType": "get_weight_statistic",
+            "from":[2025,4,24,20,0],
+            "to":[2025,4,24,21,20,20]
+        }
+    """.trimIndent()
+    val connection = KeyDBConnection()
+    val responseAwaiter = ResponseAwaiter()
+    val outputAdapter = KeyDBOutputAdapter(connection)
+    val outPort = ResponseProcessor(outputAdapter)
+    val userProductRepository: UserProductRepository = UserProductRepositoryImpl()
+    val userDataRepository: UserDataRepository = UserDataRepositoryImpl()
+    val addProductConsumptionService: AddProductConsumptionPort = AddProductConsumptionService(userProductRepository)
+    val calculationService: CaloriesCalculationPort = CalculateCaloriesService()
+    val getCaloriesService: GetUserCaloriesPort = GetUserCaloriesService(calculationService)
+    val getUserIdsService: GetUserIdsPort = GetUserIdsService(userProductRepository)
+    val addUserService: CreateUserPort = AddUserService(userDataRepository)
+    val userWeightService: UserWeightPort = UserWeightService(userDataRepository)
+    val externalProductPort: ExternalProductPort = ExternalProductAdapter(outputAdapter, responseAwaiter)
 
-    val addProductConsumptionService: AddProductConsumptionPort = AddProductConsumptionService(UserProductInMemoryRepositoryImpl())
+
     val handlers: Map<String, RequestHandler> = mapOf(
-        "add_product" to AddProductConsumptionHandler(addProductConsumptionService)
+        "add_product" to AddProductConsumptionHandler(addProductConsumptionService, outPort),
+        "get_calories" to GetCaloriesHandler(getCaloriesService, getUserIdsService, outputAdapter, externalProductPort),
+        "get_products" to GetProductStatHandler(
+            getUserIdsService,
+            outputAdapter,
+            calculationService,
+            externalProductPort
+        ),
+        "add_user" to AddUserHandler(addUserService, outputAdapter),
+        "add_weight_statistic" to AddUserWeightHandler(userWeightService, outputAdapter),
+        "get_weight_statistic" to GetUserWeightStatisticHandler(userWeightService, outputAdapter)
     )
 
-    val handleRegistry: HandleRegistry = DefaultHandleRegistry(handlers)
-    val adapter = KeyDBAdapter(fakeKeyDB, handleRegistry)
-    adapter.startListening()
+
+    val handlerRegistry = DefaultHandleRegistry(handlers)
+    outputAdapter.sendRequest(getWeightStatRequest)
+    val input = RequestProcessor(KeyDBInputAdapter(connection), handlerRegistry, responseAwaiter)
+    input.startListening()
+    Thread.sleep(Long.MAX_VALUE)
 }

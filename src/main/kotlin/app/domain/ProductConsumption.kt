@@ -1,3 +1,11 @@
 package org.healthapp.app.domain
 
-data class ProductConsumption(val id: Long, val user: User, val productId: Long, val mass: Double, val timeStamp: String)
+import java.time.LocalDateTime
+import java.util.*
+
+data class ProductConsumption(
+    val user: UUID,
+    val productId: Long,
+    val mass: Double,
+    val timeStamp: LocalDateTime
+)

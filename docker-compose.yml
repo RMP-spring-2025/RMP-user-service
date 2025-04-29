@@ -1,0 +1,40 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:latest
+    container_name: rmp_user_postgres
+    environment:
+      POSTGRES_USER: user_postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: user_db
+    ports:
+      - "5433:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    restart: unless-stopped
+#  liquibase:
+#    image: liquibase/liquibase
+#    depends_on:
+#      - postgres
+#    volumes:
+#      - ./src/main/resources:/liquibase/changelog
+#    command:
+#      --defaultsFile=/liquibase/changelog/liquibase.properties
+#      --searchPath=/liquibase/changelog/db/changelog
+#      update
+
+
+  keydb:
+    image: eqalpha/keydb
+    container_name: mykeydb
+    ports:
+      - "6379:6379"
+    volumes:
+      - keydb-data:/data
+    command: keydb-server /etc/keydb/keydb.conf
+    restart: unless-stopped
+
+volumes:
+  postgres_data:
+  keydb-data:
