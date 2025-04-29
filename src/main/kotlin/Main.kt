@@ -62,8 +62,8 @@ fun main() {
             externalProductPort
         ),
         "add_user" to AddUserHandler(addUserService, outputAdapter),
-        "add_weight_statistic" to AddUserWeightHandler(userWeightService, outputAdapter),
-        "get_weight_statistic" to GetUserWeightStatisticHandler(userWeightService, outputAdapter)
+        "add_weight" to AddUserWeightHandler(userWeightService, outputAdapter),
+        "get_weight" to GetUserWeightStatisticHandler(userWeightService, outputAdapter)
     )
 
 
