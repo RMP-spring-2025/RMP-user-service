@@ -74,7 +74,7 @@ sealed class Request {
     ) : Request()
 
     @Serializable
-    @SerialName("add_weight_statistic")
+    @SerialName("add_weight")
     data class AddWeightRequest(
         @Serializable(with = UUIDSerializer::class)
         @SerialName("requestId") override val requestId: UUID,
@@ -87,7 +87,7 @@ sealed class Request {
     ) : Request()
 
     @Serializable
-    @SerialName("get_weight_statistic")
+    @SerialName("get_weight")
     data class GetWeightStatisticRequest(
         @Serializable(with = UUIDSerializer::class)
         @SerialName("requestId") override val requestId: UUID,
