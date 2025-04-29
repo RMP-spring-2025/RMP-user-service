@@ -5,7 +5,7 @@ import org.healthapp.infrastructure.response.Response
 
 interface KeyDBOutputPort {
 
-    fun sendResponse(response: Response)
+    suspend fun sendResponse(response: Response)
     fun sendRequest(request: String)
-    fun sendProductRequest(externalRequest: ExternalRequest): String
+    suspend fun sendProductRequest(externalRequest: ExternalRequest): String
 }

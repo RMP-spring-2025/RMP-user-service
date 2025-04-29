@@ -9,7 +9,7 @@ sealed class Response {
     abstract val requestId: UUID
 
     @Serializable
-    data class CaloriesResponse(
+    data class StatisticResponse(
         @Serializable(with = UUIDSerializer::class)
         override val requestId: UUID,
         val stats: List<StatEntryDTO>

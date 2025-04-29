@@ -9,11 +9,11 @@ import org.healthapp.util.KeyDBConnection
 
 class KeyDBOutputAdapter(
     private val connection: KeyDBConnection,
-    private val responseQueue: String = "user_response_list",
+    private val responseQueue: String = "user_service_response",
     private val requestQueue: String = "user_request_list",
     private val productServiceQueue: String = "user_service_product_requests"
 ) : KeyDBOutputPort {
-    override fun sendResponse(response: Response) {
+    override suspend fun sendResponse(response: Response) {
         val jsonString = JsonSerializationConfig.json.encodeToString(response)
         connection.commands.lpush(responseQueue, jsonString)
     }
@@ -22,10 +22,11 @@ class KeyDBOutputAdapter(
         connection.commands.lpush(requestQueue, request)
     }
 
-    override fun sendProductRequest(externalRequest: ExternalRequest): String {
+    override suspend fun sendProductRequest(externalRequest: ExternalRequest): String {
         try {
-            val jsonString = ExternalJsonSerializationConfig().json.encodeToString<ExternalRequest>(externalRequest)
+            val jsonString = ExternalJsonSerializationConfig.json.encodeToString(externalRequest)
             connection.commands.lpush(productServiceQueue, jsonString)
+            println(jsonString)
             return externalRequest.requestId.toString()
         } catch (e: Exception) {
             println("Error sending product request: ${e.message}")

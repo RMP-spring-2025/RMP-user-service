@@ -6,4 +6,6 @@
         http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd">
     <include file="v.1.0/2025-16-04--01-create-users-table.xml" relativeToChangelogFile="true"/>
     <include file="v.1.0/2025-16-04--02-create-user_products-table.xml" relativeToChangelogFile="true"/>
+    <include file="v.1.0/2025-28-04--03-create-user-weight-history-table.xml" relativeToChangelogFile="true"/>
+
 </databaseChangeLog>

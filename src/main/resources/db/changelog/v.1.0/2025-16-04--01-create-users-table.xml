@@ -24,9 +24,6 @@
             <column name="height" type="DECIMAL(5,2)">
                 <constraints checkConstraint="height > 0"/>
             </column>
-            <column name="weight" type="DECIMAL(5,2)">
-                <constraints checkConstraint="weight > 0"/>
-            </column>
         </createTable>
     </changeSet>
 </databaseChangeLog>

@@ -10,4 +10,18 @@ sealed class StatEntryDTO {
         @SerialName("time") val time: String,
         @SerialName("calories") val calories: Int
     ) : StatEntryDTO()
+
+
+    @Serializable
+    data class ProductStat(
+        @SerialName("time") val time: String,
+        @SerialName("name") val name: String,
+        @SerialName("calories") val calories: Int
+    ) : StatEntryDTO()
+
+    @Serializable
+    data class WeightStat(
+        @SerialName("weight") val weight: Double,
+        @SerialName("time") val time: String
+    ) : StatEntryDTO()
 }

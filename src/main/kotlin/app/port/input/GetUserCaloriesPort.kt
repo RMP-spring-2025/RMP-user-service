@@ -1,13 +1,10 @@
 package org.healthapp.app.port.input
 
-import org.healthapp.infrastructure.dto.ProductStatDTO
-import org.healthapp.infrastructure.response.ExternalResponse
-import org.healthapp.infrastructure.response.StatEntryDTO
-import java.time.LocalDateTime
-import java.util.*
+import org.healthapp.app.domain.CaloriesStat
+import org.healthapp.app.domain.Product
+import org.healthapp.app.domain.ProductStat
 
 interface GetUserCaloriesPort {
-    fun getUserCalories(userId: UUID, from: LocalDateTime, to: LocalDateTime): List<ProductStatDTO>
 
-    fun calculateCalories(productStats: List<ProductStatDTO>, response: ExternalResponse): List<StatEntryDTO>
+    fun calculateCalories(productStats: List<ProductStat>, response: List<Product>): List<CaloriesStat>
 }

@@ -45,4 +45,58 @@ sealed class Request {
         @Serializable(with = LocalDateTimeSerializer::class)
         val to: LocalDateTime
     ) : Request()
+
+    @Serializable
+    @SerialName("get_products")
+    data class GetProductsRequest(
+        @Serializable(with = UUIDSerializer::class)
+        @SerialName("requestId") override val requestId: UUID,
+        @Serializable(with = UUIDSerializer::class)
+        @SerialName("userId") override val userId: UUID,
+        override val requestType: String,
+        @Serializable(with = LocalDateTimeSerializer::class)
+        val from: LocalDateTime,
+        @Serializable(with = LocalDateTimeSerializer::class)
+        val to: LocalDateTime
+    ) : Request()
+
+    @Serializable
+    @SerialName("add_user")
+    data class AddUserRequest(
+        @Serializable(with = UUIDSerializer::class)
+        @SerialName("requestId") override val requestId: UUID,
+        @Serializable(with = UUIDSerializer::class)
+        @SerialName("userId") override val userId: UUID,
+        override val requestType: String,
+        @SerialName("username") val username: String,
+        @SerialName("age") val age: Int,
+        @SerialName("height") val height: Double
+    ) : Request()
+
+    @Serializable
+    @SerialName("add_weight_statistic")
+    data class AddWeightRequest(
+        @Serializable(with = UUIDSerializer::class)
+        @SerialName("requestId") override val requestId: UUID,
+        @Serializable(with = UUIDSerializer::class)
+        @SerialName("userId") override val userId: UUID,
+        override val requestType: String,
+        @Serializable(with = LocalDateTimeSerializer::class)
+        val time: LocalDateTime,
+        @SerialName("weight") val weight: Double
+    ) : Request()
+
+    @Serializable
+    @SerialName("get_weight_statistic")
+    data class GetWeightStatisticRequest(
+        @Serializable(with = UUIDSerializer::class)
+        @SerialName("requestId") override val requestId: UUID,
+        @Serializable(with = UUIDSerializer::class)
+        @SerialName("userId") override val userId: UUID,
+        override val requestType: String,
+        @Serializable(with = LocalDateTimeSerializer::class)
+        val from: LocalDateTime,
+        @Serializable(with = LocalDateTimeSerializer::class)
+        val to: LocalDateTime
+    ) : Request()
 }

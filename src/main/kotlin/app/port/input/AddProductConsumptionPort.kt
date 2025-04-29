@@ -1,7 +1,7 @@
 package org.healthapp.app.port.input
 
-import org.healthapp.infrastructure.dto.ProductConsumptionDTO
+import org.healthapp.app.domain.ProductConsumption
 
 interface AddProductConsumptionPort {
-    fun addUserConsumedProduct(consumedProduct: ProductConsumptionDTO): Boolean
+    fun addUserConsumedProduct(consumedProduct: ProductConsumption): Boolean
 }

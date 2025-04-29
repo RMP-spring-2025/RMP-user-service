@@ -7,7 +7,7 @@ import org.healthapp.infrastructure.response.Response
 class ResponseProcessor(
     private val keyDBPort: KeyDBOutputPort,
 ) {
-    fun sendResponse(response: Response) {
+    suspend fun sendResponse(response: Response) {
         try {
             keyDBPort.sendResponse(response)
         } catch (e: Exception) {

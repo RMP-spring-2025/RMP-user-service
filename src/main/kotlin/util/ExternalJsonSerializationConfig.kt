@@ -3,7 +3,7 @@ package org.healthapp.util
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.json.Json
 
-class ExternalJsonSerializationConfig {
+object ExternalJsonSerializationConfig {
     @OptIn(ExperimentalSerializationApi::class)
     val json = Json {
         encodeDefaults = true

@@ -1,4 +1,4 @@
-import org.gradle.internal.declarativedsl.parsing.main
+//import org.gradle.internal.declarativedsl.parsing.main
 
 plugins {
     kotlin("jvm") version "2.1.10"
@@ -31,9 +31,9 @@ application {
 tasks.test {
     useJUnitPlatform()
 }
-kotlin {
-    jvmToolchain(21)
-}
+//kotlin {
+//    jvmToolchain(21)
+//}
 tasks.shadowJar {
     archiveBaseName.set("RMP-user-service") // Базовое имя JAR
     archiveClassifier.set("all")            // Добавит суффикс "-all"

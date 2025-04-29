@@ -1,7 +1,7 @@
 package org.healthapp.infrastructure.adapter.input.interfaces
 
 interface KeyDBInputPort {
-    fun receiveRequest(): String?
+    suspend fun receiveRequest(): String?
 
     fun receiveExternalResponse(): String?
 }
