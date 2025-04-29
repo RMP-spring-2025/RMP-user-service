@@ -15,10 +15,11 @@ import org.healthapp.infrastructure.handler.DefaultHandleRegistry
 import org.healthapp.infrastructure.handler.handlers.AddProductConsumptionHandler
 import org.healthapp.infrastructure.handler.handlers.GetCaloriesHandler
 import org.healthapp.infrastructure.handler.interfaces.RequestHandler
+import org.healthapp.infrastructure.persistance.LiquibaseRunner
 import org.healthapp.util.KeyDBConnection
 
 fun main() {
-
+    LiquibaseRunner(System.getenv("rmp-user-service_DBChangelogFilePath")).runMigrations()
     val connection = KeyDBConnection()
     val responseAwaiter = ResponseAwaiter()
     val outputAdapter = KeyDBOutputAdapter(connection)
