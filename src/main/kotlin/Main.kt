@@ -6,10 +6,7 @@ import app.service.GetUserCaloriesService
 import org.healthapp.app.port.input.*
 import org.healthapp.app.port.output.UserDataRepository
 import org.healthapp.app.port.output.UserProductRepository
-import org.healthapp.app.service.AddUserService
-import org.healthapp.app.service.CalculateCaloriesService
-import org.healthapp.app.service.GetUserIdsService
-import org.healthapp.app.service.UserWeightService
+import org.healthapp.app.service.*
 import org.healthapp.infrastructure.adapter.input.KeyDBInputAdapter
 import org.healthapp.infrastructure.adapter.input.RequestProcessor
 import org.healthapp.infrastructure.adapter.output.*
@@ -62,6 +59,8 @@ fun main() {
     val addProductConsumptionService: AddProductConsumptionPort = AddProductConsumptionService(userProductRepository)
     val calculationService: CaloriesCalculationPort = CalculateCaloriesService()
     val getCaloriesService: GetUserCaloriesPort = GetUserCaloriesService(calculationService)
+    val getCalculateBzuService: BzuCalculationPort = CalculateBzuService()
+    val getBzuService: GetUserBzuPort = GetUserBzuService(getCalculateBzuService)
     val getUserIdsService: GetUserIdsPort = GetUserIdsService(userProductRepository)
     val addUserService: CreateUserPort = AddUserService(userDataRepository)
     val userWeightService: UserWeightPort = UserWeightService(userDataRepository)
@@ -71,6 +70,7 @@ fun main() {
     val handlers: Map<String, RequestHandler> = mapOf(
         "add_product" to AddProductConsumptionHandler(addProductConsumptionService, outPort),
         "get_calories" to GetCaloriesHandler(getCaloriesService, getUserIdsService, outputAdapter, externalProductPort),
+        "get_bzu" to GetBzuHandler(getBzuService, getUserIdsService, outputAdapter, externalProductPort),
         "get_products" to GetProductStatHandler(
             getUserIdsService,
             outputAdapter,

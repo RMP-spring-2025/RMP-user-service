@@ -27,6 +27,9 @@ class ExternalProductAdapter(
                 Product(
                     id = it.productId,
                     name = it.name,
+                    bPerHundredGrams = it.B,
+                    zPerHundredGrams = it.Z,
+                    uPerHundredGrams = it.U,
                     caloriesPerHundredGrams = it.calories
                 )
             }
