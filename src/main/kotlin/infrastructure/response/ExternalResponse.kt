@@ -6,14 +6,14 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class ExternalResponse(
-    @SerialName("request_id")
+    @SerialName("requestId")
     val requestId: String,
     val products: List<Product>
 )
 
 @Serializable
 data class Product(
-    @SerialName("product_id")
+    @SerialName("productId")
     val productId: Long,
     val name: String,
     val calories: Double,
