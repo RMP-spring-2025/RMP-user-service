@@ -47,6 +47,21 @@ sealed class Request {
     ) : Request()
 
     @Serializable
+    @SerialName("get_bzu")
+    data class GetBzuRequest(
+        @Serializable(with = UUIDSerializer::class)
+        @SerialName("requestId") override val requestId: UUID,
+        @Serializable(with = UUIDSerializer::class)
+        @SerialName("userId") override val userId: UUID,
+        override val requestType: String,
+        @Serializable(with = LocalDateTimeSerializer::class)
+        val from: LocalDateTime,
+        @Serializable(with = LocalDateTimeSerializer::class)
+        val to: LocalDateTime
+
+    ) : Request()
+
+    @Serializable
     @SerialName("get_products")
     data class GetProductsRequest(
         @Serializable(with = UUIDSerializer::class)
