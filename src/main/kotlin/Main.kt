@@ -59,7 +59,8 @@ fun main() {
             getUserIdsService,
             outputAdapter,
             calculationService,
-            externalProductPort
+            externalProductPort,
+            getCalculateBzuService
         ),
         "add_user" to AddUserHandler(addUserService, outputAdapter),
         "add_weight" to AddUserWeightHandler(userWeightService, outputAdapter),
