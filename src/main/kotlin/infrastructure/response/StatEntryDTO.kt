@@ -24,7 +24,11 @@ sealed class StatEntryDTO {
     data class ProductStat(
         @SerialName("time") val time: String,
         @SerialName("name") val name: String,
-        @SerialName("calories") val calories: Int
+        @SerialName("calories") val calories: Int,
+        @SerialName("B") val B: Int,
+        @SerialName("Z") val Z: Int,
+        @SerialName("U") val U: Int,
+        @SerialName("massConsumed") val massConsumed: Int
     ) : StatEntryDTO()
 
     @Serializable
