@@ -3,18 +3,10 @@ package org.healthapp
 import ResponseAwaiter
 import app.service.AddProductConsumptionService
 import app.service.GetUserCaloriesService
-import org.healthapp.app.port.input.AddProductConsumptionPort
-import org.healthapp.app.port.input.CaloriesCalculationPort
-import org.healthapp.app.port.input.CreateUserPort
-import org.healthapp.app.port.input.GetUserCaloriesPort
-import org.healthapp.app.port.input.GetUserIdsPort
-import org.healthapp.app.port.input.UserWeightPort
+import org.healthapp.app.port.input.*
 import org.healthapp.app.port.output.UserDataRepository
 import org.healthapp.app.port.output.UserProductRepository
-import org.healthapp.app.service.AddUserService
-import org.healthapp.app.service.CalculateCaloriesService
-import org.healthapp.app.service.GetUserIdsService
-import org.healthapp.app.service.UserWeightService
+import org.healthapp.app.service.*
 import org.healthapp.infrastructure.adapter.input.KeyDBInputAdapter
 import org.healthapp.infrastructure.adapter.input.RequestProcessor
 import org.healthapp.infrastructure.adapter.output.ExternalProductAdapter
@@ -24,12 +16,7 @@ import org.healthapp.infrastructure.adapter.output.UserDataRepositoryImpl
 import org.healthapp.infrastructure.adapter.output.UserProductRepositoryImpl
 import org.healthapp.infrastructure.adapter.output.interfaces.ExternalProductPort
 import org.healthapp.infrastructure.handler.DefaultHandleRegistry
-import org.healthapp.infrastructure.handler.handlers.AddProductConsumptionHandler
-import org.healthapp.infrastructure.handler.handlers.AddUserHandler
-import org.healthapp.infrastructure.handler.handlers.AddUserWeightHandler
-import org.healthapp.infrastructure.handler.handlers.GetCaloriesHandler
-import org.healthapp.infrastructure.handler.handlers.GetProductStatHandler
-import org.healthapp.infrastructure.handler.handlers.GetUserWeightStatisticHandler
+import org.healthapp.infrastructure.handler.handlers.*
 import org.healthapp.infrastructure.handler.interfaces.RequestHandler
 import org.healthapp.infrastructure.persistance.LiquibaseRunner
 import org.healthapp.util.KeyDBConnection
@@ -46,6 +33,8 @@ fun main() {
     val addProductConsumptionService: AddProductConsumptionPort = AddProductConsumptionService(userProductRepository)
     val calculationService: CaloriesCalculationPort = CalculateCaloriesService()
     val getCaloriesService: GetUserCaloriesPort = GetUserCaloriesService(calculationService)
+    val getCalculateBzuService: BzuCalculationPort = CalculateBzuService()
+    val getBzuService: GetUserBzuPort = GetUserBzuService(getCalculateBzuService)
     val getUserIdsService: GetUserIdsPort = GetUserIdsService(userProductRepository)
     val addUserService: CreateUserPort = AddUserService(userDataRepository)
     val userWeightService: UserWeightPort = UserWeightService(userDataRepository)
@@ -55,6 +44,7 @@ fun main() {
     val handlers: Map<String, RequestHandler> = mapOf(
         "add_product" to AddProductConsumptionHandler(addProductConsumptionService, outPort),
         "get_calories" to GetCaloriesHandler(getCaloriesService, getUserIdsService, outputAdapter, externalProductPort),
+        "get_bzu" to GetBzuHandler(getBzuService, getUserIdsService, outputAdapter, externalProductPort),
         "get_products" to GetProductStatHandler(
             getUserIdsService,
             outputAdapter,
