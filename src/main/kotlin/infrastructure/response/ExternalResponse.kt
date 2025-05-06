@@ -8,7 +8,7 @@ import kotlinx.serialization.Serializable
 data class ExternalResponse(
     @SerialName("requestId")
     val requestId: String,
-    val products: List<Product>
+    val data: List<Product>
 )
 
 @Serializable
