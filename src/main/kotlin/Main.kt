@@ -3,6 +3,7 @@ package org.healthapp
 import ResponseAwaiter
 import app.service.AddProductConsumptionService
 import app.service.GetUserCaloriesService
+import mu.KotlinLogging
 import org.healthapp.app.port.input.*
 import org.healthapp.app.port.output.UserDataRepository
 import org.healthapp.app.port.output.UserProductRepository
@@ -19,7 +20,7 @@ import java.util.*
 import kotlin.random.Random
 
 fun main() {
-    "{\"productId\":45,\"time\":\"2025-04-24T20:36:44\",\"massConsumed\":432543.0,\"requestType\":\"add_product\",\"requestId\":\"e17c5fb2-14d8-4bda-a094-bfb3a8e10d29\",\"userId\":\"d39fb70b-2477-48e1-bc49-2bdbf742a12d\"}".trimIndent()
+    val addProductReq = "{\"productId\":45,\"time\":\"2025-04-24T20:36:44\",\"massConsumed\":432543.0,\"requestType\":\"add_product\",\"requestId\":\"e17c5fb2-14d8-4bda-a094-bfb3a8e10d29\",\"userId\":\"d39fb70b-2477-48e1-bc49-2bdbf742a12d\"}".trimIndent()
     "{\"requestType\":\"get_calories\",\"requestId\":\"9569e7cd-5627-4423-97d8-2c36679e4e32\",\"userId\":\"d39fb70b-2477-48e1-bc49-2bdbf742a12d\",\"from\":[2025,4,24,20,0],\"to\":[2025,4,24,21,20,20]}".trimIndent()
     "{\"requestType\":\"get_products\",\"requestId\":\"fec2298a-6369-4e98-850d-18098ed5957b\",\"userId\":\"d39fb70b-2477-48e1-bc49-2bdbf742a12d\",\"from\":[2025,4,24,20,0],\"to\":[2025,4,24,21,20,20]}".trimIndent()
     """
@@ -50,6 +51,7 @@ fun main() {
             "to":[2025,4,24,21,20,20]
         }
     """.trimIndent()
+    val logger = KotlinLogging.logger {  }
     val connection = KeyDBConnection()
     val responseAwaiter = ResponseAwaiter()
     val outputAdapter = KeyDBOutputAdapter(connection)
@@ -85,7 +87,7 @@ fun main() {
 
 
     val handlerRegistry = DefaultHandleRegistry(handlers)
-    outputAdapter.sendRequest(getWeightStatRequest)
+    outputAdapter.sendRequest(addProductReq)
     val input = RequestProcessor(KeyDBInputAdapter(connection), handlerRegistry, responseAwaiter)
     input.startListening()
     Thread.sleep(Long.MAX_VALUE)
