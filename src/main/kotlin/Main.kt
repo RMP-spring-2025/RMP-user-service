@@ -50,6 +50,14 @@ fun main() {
             "to":[2025,4,24,21,20,20]
         }
     """.trimIndent()
+    val getUserStatRequest = """
+        {   
+            "requestId": "${UUID.randomUUID()}",
+            "userId": "6f0c05d2-1244-404e-88db-85222accbf6f",
+            "requestType": "get_user_stat"
+        }
+    """.trimIndent()
+
     val connection = KeyDBConnection()
     val responseAwaiter = ResponseAwaiter()
     val outputAdapter = KeyDBOutputAdapter(connection)
@@ -59,6 +67,7 @@ fun main() {
     val addProductConsumptionService: AddProductConsumptionPort = AddProductConsumptionService(userProductRepository)
     val calculationService: CaloriesCalculationPort = CalculateCaloriesService()
     val getCaloriesService: GetUserCaloriesPort = GetUserCaloriesService(calculationService)
+    val getUserStatService: GetUserStatPort = GetUserStatService(userDataRepository)
     val getCalculateBzuService: BzuCalculationPort = CalculateBzuService()
     val getBzuService: GetUserBzuPort = GetUserBzuService(getCalculateBzuService)
     val getUserIdsService: GetUserIdsPort = GetUserIdsService(userProductRepository)
@@ -78,14 +87,15 @@ fun main() {
             externalProductPort,
             getCalculateBzuService
         ),
-        "add_user" to AddUserHandler(addUserService, outputAdapter),
+        "add_user" to AddUserHandler(addUserService, userWeightService, outputAdapter),
         "add_weight" to AddUserWeightHandler(userWeightService, outputAdapter),
-        "get_weight" to GetUserWeightStatisticHandler(userWeightService, outputAdapter)
+        "get_weight" to GetUserWeightStatisticHandler(userWeightService, outputAdapter),
+        "get_user_stat" to GetUserStatHandler(outputAdapter, getUserStatService)
     )
 
 
     val handlerRegistry = DefaultHandleRegistry(handlers)
-    outputAdapter.sendRequest(getWeightStatRequest)
+    outputAdapter.sendRequest(getUserStatRequest)
     val input = RequestProcessor(KeyDBInputAdapter(connection), handlerRegistry, responseAwaiter)
     input.startListening()
     Thread.sleep(Long.MAX_VALUE)

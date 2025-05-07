@@ -24,6 +24,7 @@
             <column name="height" type="DECIMAL(5,2)">
                 <constraints checkConstraint="height > 0"/>
             </column>
+            <column name="goal" type="VARCHAR(50)"/>
         </createTable>
     </changeSet>
 </databaseChangeLog>

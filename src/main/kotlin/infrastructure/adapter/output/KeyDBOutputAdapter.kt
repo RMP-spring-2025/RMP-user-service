@@ -10,7 +10,7 @@ import org.healthapp.util.KeyDBConnection
 class KeyDBOutputAdapter(
     private val connection: KeyDBConnection,
     private val responseQueue: String = "user_service_response",
-    private val requestQueue: String = "user_request_list",
+    private val requestQueue: String = "user_service_requests",
     private val productServiceQueue: String = "user_service_product_requests"
 ) : KeyDBOutputPort {
     override suspend fun sendResponse(response: Response) {
