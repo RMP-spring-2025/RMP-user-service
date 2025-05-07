@@ -10,7 +10,6 @@ class KeyDBInputAdapter(
 ) : KeyDBInputPort {
     override suspend fun receiveRequest(): String? {
         val req = connection.commands.brpop(1, requestQueue)?.value
-        println(req)
         return req
     }
 
