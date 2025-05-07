@@ -60,7 +60,7 @@ liquibase {
     activities.register("main") {
         this.arguments = mapOf(
             "changeLogFile" to "src/main/resources/db/changelog/changelog-master.xml",
-            "url" to "jdbc:postgresql://localhost:5433/user_db",
+            "url" to "jdbc:postgresql://localhost:5432/user_db",
             "username" to "user_postgres",
             "password" to "postgres",
             "driver" to "org.postgresql.Driver"
