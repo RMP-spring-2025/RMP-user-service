@@ -9,17 +9,15 @@ import org.healthapp.app.port.output.UserProductRepository
 import org.healthapp.app.service.*
 import org.healthapp.infrastructure.adapter.input.KeyDBInputAdapter
 import org.healthapp.infrastructure.adapter.input.RequestProcessor
-import org.healthapp.infrastructure.adapter.output.ExternalProductAdapter
-import org.healthapp.infrastructure.adapter.output.KeyDBOutputAdapter
-import org.healthapp.infrastructure.adapter.output.ResponseProcessor
-import org.healthapp.infrastructure.adapter.output.UserDataRepositoryImpl
-import org.healthapp.infrastructure.adapter.output.UserProductRepositoryImpl
+import org.healthapp.infrastructure.adapter.output.*
 import org.healthapp.infrastructure.adapter.output.interfaces.ExternalProductPort
 import org.healthapp.infrastructure.handler.DefaultHandleRegistry
 import org.healthapp.infrastructure.handler.handlers.*
 import org.healthapp.infrastructure.handler.interfaces.RequestHandler
 import org.healthapp.infrastructure.persistance.LiquibaseRunner
 import org.healthapp.util.KeyDBConnection
+import java.util.*
+import kotlin.random.Random
 
 fun main() {
     LiquibaseRunner(System.getenv("rmp-user-service_DBChangelogFilePath")).runMigrations()

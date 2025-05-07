@@ -31,6 +31,8 @@ dependencies {
     liquibaseRuntime("info.picocli:picocli:4.6.3")
     implementation("com.fasterxml.jackson.dataformat:jackson-dataformat-xml")
     implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.17.1")
+    implementation("io.github.microutils:kotlin-logging:3.0.5")
+    implementation("ch.qos.logback:logback-classic:1.4.14")
 
 }
 application {
