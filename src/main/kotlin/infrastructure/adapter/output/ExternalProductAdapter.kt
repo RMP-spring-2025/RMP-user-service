@@ -1,6 +1,7 @@
 package org.healthapp.infrastructure.adapter.output
 
 import ResponseAwaiter
+import mu.KotlinLogging
 import org.healthapp.app.domain.Product
 import org.healthapp.infrastructure.adapter.output.interfaces.ExternalProductPort
 import org.healthapp.infrastructure.adapter.output.interfaces.KeyDBOutputPort
@@ -13,14 +14,13 @@ class ExternalProductAdapter(
     private val outPort: KeyDBOutputPort,
     private val responseAwaiter: ResponseAwaiter
 ) : ExternalProductPort {
-
+    private val logger = KotlinLogging.logger {  }
     override suspend fun getProducts(productIds: List<Long>): Result<List<Product>> {
         if (productIds.isEmpty()) return Result.success(emptyList())
 
         val request = generateGetProductByIDRequest(productIds)
         val correlationId = outPort.sendProductRequest(request)
         val response = responseAwaiter.awaitResponse(correlationId).await()
-
         return try {
             val externalResponse = JsonSerializationConfig.json.decodeFromString<ExternalResponse>(response)
             val products = externalResponse.data.map {

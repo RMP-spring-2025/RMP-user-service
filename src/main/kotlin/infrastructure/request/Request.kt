@@ -6,6 +6,8 @@ import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.JsonClassDiscriminator
+import org.healthapp.app.domain.UserGoal
+import org.healthapp.app.domain.UserWeight
 import org.healthapp.util.UUIDSerializer
 import java.time.LocalDateTime
 import java.util.*
@@ -85,7 +87,11 @@ sealed class Request {
         override val requestType: String,
         @SerialName("username") val username: String,
         @SerialName("age") val age: Int,
-        @SerialName("height") val height: Double
+        @SerialName("height") val height: Double,
+        @SerialName("weight") val weight: Double,
+        @Serializable(with = LocalDateTimeSerializer::class)
+        val time: LocalDateTime,
+        @SerialName("goal") val goal: UserGoal
     ) : Request()
 
     @Serializable
@@ -114,4 +120,15 @@ sealed class Request {
         @Serializable(with = LocalDateTimeSerializer::class)
         val to: LocalDateTime
     ) : Request()
+
+    @Serializable
+    @SerialName("get_user_stat")
+    data class GetUserStatisticRequest(
+        @Serializable(with = UUIDSerializer::class)
+        @SerialName("requestId") override val requestId: UUID,
+        @Serializable(with = UUIDSerializer::class)
+        @SerialName("userId") override val userId: UUID,
+        override val requestType: String,
+    ) : Request()
+
 }

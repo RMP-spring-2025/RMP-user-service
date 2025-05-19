@@ -3,17 +3,19 @@ package org.healthapp.infrastructure.adapter.input
 import ResponseAwaiter
 import kotlinx.coroutines.*
 import kotlinx.coroutines.channels.Channel
+import mu.KotlinLogging
 import org.healthapp.infrastructure.adapter.input.interfaces.KeyDBInputPort
 import org.healthapp.infrastructure.handler.interfaces.HandleRegistry
 import org.healthapp.infrastructure.request.Request
 import org.healthapp.infrastructure.response.ExternalResponse
 import org.healthapp.util.JsonSerializationConfig
-
+private val logger = KotlinLogging.logger {  }
 class RequestProcessor(
     private val keyDBPort: KeyDBInputPort,
     private val handlers: HandleRegistry,
     private val responseAwaiter: ResponseAwaiter
 ) {
+
     private val scope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
 
     private val requestChannel = Channel<String>(capacity = Channel.UNLIMITED)
@@ -23,6 +25,8 @@ class RequestProcessor(
         scope.launch {
             while (true) {
                 val request = keyDBPort.receiveRequest() ?: continue
+                logger.info("Received request from API gateway: $request")
+
                 requestChannel.send(request)
             }
         }
@@ -31,6 +35,8 @@ class RequestProcessor(
         scope.launch {
             while (true) {
                 val response = keyDBPort.receiveExternalResponse() ?: continue
+                logger.info("Received response from product service: $response")
+
                 responseChannel.send(response)
             }
         }
@@ -60,9 +66,9 @@ class RequestProcessor(
             if (parsedRequest != null) {
                 val handler = handlers.getHandler(parsedRequest.requestType)
                 if (handler != null) {
-//                    scope.launch {
-                    handler.handle(parsedRequest)
-//                    }
+                    scope.launch {
+                        handler.handle(parsedRequest)
+                    }
                 } else {
                     println("No handler found for request type: ${parsedRequest.requestType}")
                 }
@@ -72,7 +78,7 @@ class RequestProcessor(
         }
     }
 
-    private suspend fun processResponse(response: String) {
+    private fun processResponse(response: String) {
         var correlationId: String? = null
         try {
             val parsedResponse = JsonSerializationConfig.json.decodeFromString<ExternalResponse>(response)
