@@ -34,7 +34,7 @@ class UserProductRepositoryImpl : UserProductRepository {
     ): List<ProductStat> {
         return try {
             DatabaseConfiguration.getConnection().use { connection ->
-                val statement = connection.prepareStatement(Queries.GET_CALORIES_FROM_TO.query.trimIndent())
+                val statement = connection.prepareStatement(Queries.GET_PRODUCTS_FROM_TO.query.trimIndent())
                 statement.setObject(1, userId)
                 statement.setObject(2, from)
                 statement.setObject(3, to)

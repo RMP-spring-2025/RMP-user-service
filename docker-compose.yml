@@ -8,7 +8,6 @@ services:
       - "8080:8080"
     depends_on:
       - postgres
-#      - liquibase
       - keydb
     restart: unless-stopped
   postgres:
@@ -23,17 +22,6 @@ services:
     volumes:
       - postgres_data:/var/lib/postgresql/data
     restart: unless-stopped
-#  liquibase:
-#    image: liquibase/liquibase
-#    depends_on:
-#      - postgres
-#    volumes:
-#      - ./src/main/resources:/liquibase/changelog
-#    command:
-#      --defaultsFile=/liquibase/changelog/liquibase.properties
-#      --searchPath=/liquibase/changelog/db/changelog
-#      update
-
 
   keydb:
     image: eqalpha/keydb

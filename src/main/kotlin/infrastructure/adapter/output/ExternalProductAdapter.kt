@@ -23,7 +23,7 @@ class ExternalProductAdapter(
         val response = responseAwaiter.awaitResponse(correlationId).await()
         return try {
             val externalResponse = JsonSerializationConfig.json.decodeFromString<ExternalResponse>(response)
-            val products = externalResponse.products.map {
+            val products = externalResponse.data.map {
                 Product(
                     id = it.productId,
                     name = it.name,

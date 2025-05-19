@@ -1,0 +1,5 @@
+FROM gradle:8.13.0-jdk21 AS build
+WORKDIR /home/gradle/project
+VOLUME /home/gradle/project
+VOLUME /home/gradle/.gradle
+CMD ["gradle", "shadowJar", "--no-daemon"]

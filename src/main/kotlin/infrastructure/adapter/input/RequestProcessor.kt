@@ -26,6 +26,7 @@ class RequestProcessor(
             while (true) {
                 val request = keyDBPort.receiveRequest() ?: continue
                 logger.info("Received request from API gateway: $request")
+
                 requestChannel.send(request)
             }
         }
@@ -35,6 +36,7 @@ class RequestProcessor(
             while (true) {
                 val response = keyDBPort.receiveExternalResponse() ?: continue
                 logger.info("Received response from product service: $response")
+
                 responseChannel.send(response)
             }
         }
