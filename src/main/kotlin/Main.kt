@@ -99,7 +99,7 @@ fun main() {
 
 
     val handlerRegistry = DefaultHandleRegistry(handlers)
-    outputAdapter.sendRequest(getUserStatRequest)
+    // outputAdapter.sendRequest(getUserStatRequest)
 
     val input = RequestProcessor(KeyDBInputAdapter(connection), handlerRegistry, responseAwaiter)
     input.startListening()
