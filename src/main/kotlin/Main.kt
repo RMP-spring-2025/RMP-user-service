@@ -9,7 +9,11 @@ import org.healthapp.app.port.output.UserProductRepository
 import org.healthapp.app.service.*
 import org.healthapp.infrastructure.adapter.input.KeyDBInputAdapter
 import org.healthapp.infrastructure.adapter.input.RequestProcessor
-import org.healthapp.infrastructure.adapter.output.*
+import org.healthapp.infrastructure.adapter.output.ExternalProductAdapter
+import org.healthapp.infrastructure.adapter.output.KeyDBOutputAdapter
+import org.healthapp.infrastructure.adapter.output.ResponseProcessor
+import org.healthapp.infrastructure.adapter.output.UserDataRepositoryImpl
+import org.healthapp.infrastructure.adapter.output.UserProductRepositoryImpl
 import org.healthapp.infrastructure.adapter.output.interfaces.ExternalProductPort
 import org.healthapp.infrastructure.handler.DefaultHandleRegistry
 import org.healthapp.infrastructure.handler.handlers.*
@@ -20,8 +24,7 @@ import java.util.*
 import kotlin.random.Random
 
 fun main() {
-    LiquibaseRunner(System.getenv("rmp-user-service_DBChangelogFilePath")).runMigrations()
-
+    LiquibaseRunner(System.getenv("rmp-user-service_DBChangelogFilePath") ?: "db/changelog/changelog-master.xml").runMigrations()
     val connection = KeyDBConnection()
     val responseAwaiter = ResponseAwaiter()
     val outputAdapter = KeyDBOutputAdapter(connection)
@@ -31,6 +34,7 @@ fun main() {
     val addProductConsumptionService: AddProductConsumptionPort = AddProductConsumptionService(userProductRepository)
     val calculationService: CaloriesCalculationPort = CalculateCaloriesService()
     val getCaloriesService: GetUserCaloriesPort = GetUserCaloriesService(calculationService)
+    val getUserStatService: GetUserStatPort = GetUserStatService(userDataRepository)
     val getCalculateBzuService: BzuCalculationPort = CalculateBzuService()
     val getBzuService: GetUserBzuPort = GetUserBzuService(getCalculateBzuService)
     val getUserIdsService: GetUserIdsPort = GetUserIdsService(userProductRepository)
@@ -50,9 +54,10 @@ fun main() {
             externalProductPort,
             getCalculateBzuService
         ),
-        "add_user" to AddUserHandler(addUserService, outputAdapter),
+        "add_user" to AddUserHandler(addUserService, userWeightService, outputAdapter),
         "add_weight" to AddUserWeightHandler(userWeightService, outputAdapter),
-        "get_weight" to GetUserWeightStatisticHandler(userWeightService, outputAdapter)
+        "get_weight" to GetUserWeightStatisticHandler(userWeightService, outputAdapter),
+        "get_user_stat" to GetUserStatHandler(outputAdapter, getUserStatService)
     )
 
 

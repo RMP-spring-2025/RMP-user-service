@@ -1,6 +1,9 @@
 package org.healthapp.infrastructure.adapter.output
 
+import org.healthapp.app.domain.Sex
 import org.healthapp.app.domain.User
+import org.healthapp.app.domain.UserGoal
+import org.healthapp.app.domain.UserStat
 import org.healthapp.app.domain.UserWeight
 import org.healthapp.app.port.output.UserDataRepository
 import org.healthapp.infrastructure.persistance.DatabaseConfiguration
@@ -17,10 +20,39 @@ class UserDataRepositoryImpl : UserDataRepository {
                 statement.setString(2, user.username)
                 statement.setInt(3, user.age)
                 statement.setDouble(4, user.height)
+                statement.setString(5, user.userGoal.goalName)
+                statement.setString(6, user.sex.sex)
                 statement.executeUpdate() > 0
             }
         } catch (e: Exception) {
             false
+        }
+    }
+
+
+    override fun getUserStatistic(userId: UUID): UserStat? {
+        return try {
+            DatabaseConfiguration.getConnection().use { connection ->
+                val statement = connection.prepareStatement(Queries.GET_USER_STATISTIC.query.trimIndent())
+                statement.setObject(1, userId)
+                statement.executeQuery().use { rs ->
+                    if (rs.next()) {
+                        UserStat(
+                            userId = userId,
+                            username = rs.getString("username"),
+                            weight = rs.getDouble("weight"),
+                            height = rs.getDouble("height"),
+                            age = rs.getInt("age"),
+                            goal = UserGoal.valueOf(rs.getString("goal").uppercase().replace(" ", "_")),
+                            sex = rs.getString("sex")
+                        )
+                    } else {
+                        null
+                    }
+                }
+            }
+        } catch (e: Exception) {
+            null
         }
     }
 

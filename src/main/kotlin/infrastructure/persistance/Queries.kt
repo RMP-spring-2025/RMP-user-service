@@ -11,7 +11,7 @@ enum class Queries(val query: String) {
                 "                WHERE user_id = ? AND timestamp >= ? AND timestamp <= ?"
     ),
     ADD_USER(
-        "INSERT INTO users(id, username, age, height) VALUES (?, ?, ?, ?)"
+        "INSERT INTO users(id, username, age, height, goal, sex) VALUES (?, ?, ?, ?, ?, ?)"
     ),
     ADD_USER_WEIGHT(
         "INSERT INTO user_weight(user_id, weight, timestamp) VALUES (?, ?, ?)"
@@ -19,5 +19,28 @@ enum class Queries(val query: String) {
     GET_USER_WEIGHT_FROM_TO(
         "SELECT user_id, weight, timestamp FROM user_weight\n" +
                 "                WHERE user_id = ? AND timestamp >= ? AND timestamp <= ?"
+    ),
+
+    GET_USER_STATISTIC(
+        "SELECT \n" +
+                "    u.username,\n" +
+                "    uw.weight,\n" +
+                "    u.height,\n" +
+                "    u.age,\n" +
+                "    u.goal,\n" +
+                "    u.sex\n"+
+                "FROM \n" +
+                "    users u\n" +
+                "LEFT JOIN (\n" +
+                "    SELECT \n" +
+                "        user_id,\n" +
+                "        weight,\n" +
+                "        timestamp,\n" +
+                "        ROW_NUMBER() OVER (PARTITION BY user_id ORDER BY timestamp DESC) as rn\n" +
+                "    FROM \n" +
+                "        user_weight\n" +
+                ") uw ON u.id = uw.user_id AND uw.rn = 1\n" +
+                "WHERE \n" +
+                "    u.id = ?;"
     )
 }
