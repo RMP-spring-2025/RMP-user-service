@@ -20,8 +20,6 @@ import org.healthapp.infrastructure.handler.handlers.*
 import org.healthapp.infrastructure.handler.interfaces.RequestHandler
 import org.healthapp.infrastructure.persistance.LiquibaseRunner
 import org.healthapp.util.KeyDBConnection
-import java.util.*
-import kotlin.random.Random
 
 fun main() {
     LiquibaseRunner(System.getenv("rmp-user-service_DBChangelogFilePath") ?: "db/changelog/changelog-master.xml").runMigrations()
