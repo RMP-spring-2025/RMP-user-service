@@ -1,8 +1,13 @@
 package org.healthapp
 
+import KeyDBConnectionPool
 import ResponseAwaiter
 import app.service.AddProductConsumptionService
 import app.service.GetUserCaloriesService
+import kotlinx.coroutines.CompletableDeferred
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 import org.healthapp.app.port.input.*
 import org.healthapp.app.port.output.UserDataRepository
 import org.healthapp.app.port.output.UserProductRepository
@@ -23,7 +28,7 @@ import org.healthapp.util.KeyDBConnection
 import java.util.UUID
 import kotlin.random.Random
 
-fun main() {
+fun main() = runBlocking{
     "{\"productId\":45,\"time\":\"2025-04-24T20:36:44\",\"massConsumed\":432543.0,\"requestType\":\"add_product\",\"requestId\":\"e17c5fb2-14d8-4bda-a094-bfb3a8e10d29\",\"userId\":\"d39fb70b-2477-48e1-bc49-2bdbf742a12d\"}".trimIndent()
     "{\"requestType\":\"get_calories\",\"requestId\":\"9569e7cd-5627-4423-97d8-2c36679e4e32\",\"userId\":\"d39fb70b-2477-48e1-bc49-2bdbf742a12d\",\"from\":[2025,4,24,20,0],\"to\":[2025,4,24,21,20,20]}".trimIndent()
     "{\"requestType\":\"get_products\",\"requestId\":\"fec2298a-6369-4e98-850d-18098ed5957b\",\"userId\":\"d39fb70b-2477-48e1-bc49-2bdbf742a12d\",\"from\":[2025,4,24,20,0],\"to\":[2025,4,24,21,20,20]}".trimIndent()
@@ -62,10 +67,13 @@ fun main() {
             "requestType": "get_user_stat"
         }
     """.trimIndent()
-    LiquibaseRunner(System.getenv("rmp-user-service_DBChangelogFilePath") ?: "db/changelog/changelog-master.xml").runMigrations()
+
+
+//    LiquibaseRunner(System.getenv("rmp-user-service_DBChangelogFilePath") ?: "db/changelog/changelog-master.xml").runMigrations()
     val connection = KeyDBConnection()
+    val outputPool = KeyDBConnectionPool(maxPoolSize = 5) { KeyDBConnection() }
     val responseAwaiter = ResponseAwaiter()
-    val outputAdapter = KeyDBOutputAdapter(connection)
+    val outputAdapter = KeyDBOutputAdapter(connectionPool = outputPool, connection = KeyDBConnection())
     val outPort = ResponseProcessor(outputAdapter)
     val userProductRepository: UserProductRepository = UserProductRepositoryImpl()
     val userDataRepository: UserDataRepository = UserDataRepositoryImpl()
@@ -102,7 +110,16 @@ fun main() {
     val handlerRegistry = DefaultHandleRegistry(handlers)
 //    outputAdapter.sendRequest(getUserStatRequest)
 
-    val input = RequestProcessor(KeyDBInputAdapter(connection), handlerRegistry, responseAwaiter)
+    val input = RequestProcessor(KeyDBInputAdapter(connectionPool = outputPool, KeyDBConnection()), handlerRegistry, responseAwaiter)
     input.startListening()
-    Thread.sleep(Long.MAX_VALUE)
+    val shutdownSignal = CompletableDeferred<Unit>()
+    Runtime.getRuntime().addShutdownHook(Thread {
+        launch { // Запускаем в корутине для безопасного вызова suspend-функций
+            shutdownSignal.complete(Unit)
+            input.stop()
+            connection.shutDown()
+        }
+    })
+
+    shutdownSignal.await() // Главная корутина ждет сигнала завершения
 }

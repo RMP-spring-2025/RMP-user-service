@@ -1,5 +1,6 @@
 package org.healthapp.infrastructure.adapter.output
 
+import KeyDBConnectionPool
 import mu.KotlinLogging
 import org.healthapp.infrastructure.adapter.output.interfaces.KeyDBOutputPort
 import org.healthapp.infrastructure.request.ExternalRequest
@@ -10,15 +11,18 @@ import org.healthapp.util.KeyDBConnection
 
 class KeyDBOutputAdapter(
     private val connection: KeyDBConnection,
+    private val connectionPool: KeyDBConnectionPool,
     private val responseQueue: String = "user_service_response",
     private val requestQueue: String = "user_service_requests",
     private val productServiceQueue: String = "user_service_product_requests"
 ) : KeyDBOutputPort {
     private val logger = KotlinLogging.logger {  }
     override suspend fun sendResponse(response: Response) {
-        val jsonString = JsonSerializationConfig.json.encodeToString(response)
-        logger.info("Sending response: $jsonString")
-        connection.commands.lpush(responseQueue, jsonString)
+        connectionPool.useConnection { conn ->
+            val jsonString = JsonSerializationConfig.json.encodeToString(response)
+            logger.info("Sending response: $jsonString")
+            conn.commands.lpush(responseQueue, jsonString)
+        }
     }
 
     override fun sendRequest(request: String) {
