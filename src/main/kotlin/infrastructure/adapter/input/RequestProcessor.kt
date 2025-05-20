@@ -22,7 +22,7 @@ class RequestProcessor(
     private val responseChannel = Channel<String>(capacity = Channel.UNLIMITED)
 
     fun startListening() {
-        repeat(16){
+        repeat(8){
             scope.launch {
                 while (true) {
                     val request = keyDBPort.receiveRequest() ?: continue
@@ -33,7 +33,7 @@ class RequestProcessor(
             }
         }
 
-        repeat(16){
+        repeat(8){
             scope.launch {
                 while (true) {
                     val response = keyDBPort.receiveExternalResponse() ?: continue
@@ -44,8 +44,7 @@ class RequestProcessor(
             }
         }
 
-
-        repeat(16) {
+        repeat(4){
             scope.launch {
                 for (request in requestChannel) {
                     processRequest(request)
@@ -54,7 +53,7 @@ class RequestProcessor(
         }
 
 
-        repeat(16) {
+        repeat(4){
             scope.launch {
                 for (response in responseChannel) {
                     processResponse(response)
