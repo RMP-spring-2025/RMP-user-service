@@ -9,12 +9,12 @@ class KeyDBInputAdapter(
     private val productResponseQueue: String = "user_service_product_responses"
 ) : KeyDBInputPort {
     override suspend fun receiveRequest(): String? {
-        val req = connection.commands.brpop(1, requestQueue)?.value
+        val req = connection.withConnection { commands -> commands.brpop(1, requestQueue)?.value }
         return req
     }
 
-    override fun receiveExternalResponse(): String? {
-        val res = connection.commands.brpop(1, productResponseQueue)?.value
+    override suspend fun receiveExternalResponse(): String? {
+        val res = connection.withConnection { commands -> commands.brpop(1, productResponseQueue)?.value  }
         return res
     }
 }

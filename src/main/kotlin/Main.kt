@@ -3,6 +3,7 @@ package org.healthapp
 import ResponseAwaiter
 import app.service.AddProductConsumptionService
 import app.service.GetUserCaloriesService
+import kotlinx.coroutines.runBlocking
 import org.healthapp.app.port.input.*
 import org.healthapp.app.port.output.UserDataRepository
 import org.healthapp.app.port.output.UserProductRepository
