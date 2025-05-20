@@ -8,6 +8,7 @@ data class UserStat(
     val weight: Double?,
     val height: Double,
     val age: Int,
-    val goal: UserGoal
+    val goal: UserGoal,
+    val sex: String
 ) {
 }

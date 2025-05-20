@@ -3,7 +3,7 @@
         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
         xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.9.xsd">
 
-    <changeSet id="20250428_create_product_consumption_table" author="grok">
+    <changeSet id="20250428_create_product_consumption_table" author="ilestegor">
         <createTable tableName="user_weight">
             <column name="id" type="SERIAL" autoIncrement="true">
                 <constraints primaryKey="true" nullable="false"/>

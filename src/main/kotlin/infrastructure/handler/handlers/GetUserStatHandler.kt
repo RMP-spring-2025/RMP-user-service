@@ -19,7 +19,7 @@ class GetUserStatHandler(
             request.userId
         )
         if (res != null) {
-            outPort.sendResponse(Response.UserStatResponse(request.requestId, res.userId, res.username, res.weight, res.height, res.age, res.goal))
+            outPort.sendResponse(Response.UserStatResponse(request.requestId, res.userId, res.username, res.weight, res.height, res.age, res.goal, res.sex))
         } else {
             outPort.sendResponse(Response.FailureResponse(request.requestId, "Get user statistic failed"))
         }

@@ -20,6 +20,8 @@ import org.healthapp.infrastructure.handler.handlers.*
 import org.healthapp.infrastructure.handler.interfaces.RequestHandler
 import org.healthapp.infrastructure.persistance.LiquibaseRunner
 import org.healthapp.util.KeyDBConnection
+import java.util.UUID
+import kotlin.random.Random
 
 fun main() {
     "{\"productId\":45,\"time\":\"2025-04-24T20:36:44\",\"massConsumed\":432543.0,\"requestType\":\"add_product\",\"requestId\":\"e17c5fb2-14d8-4bda-a094-bfb3a8e10d29\",\"userId\":\"d39fb70b-2477-48e1-bc49-2bdbf742a12d\"}".trimIndent()
@@ -60,8 +62,7 @@ fun main() {
             "requestType": "get_user_stat"
         }
     """.trimIndent()
-    LiquibaseRunner(System.getenv("rmp-user-service_DBChangelogFilePath")).runMigrations()
-
+    LiquibaseRunner(System.getenv("rmp-user-service_DBChangelogFilePath") ?: "db/changelog/changelog-master.xml").runMigrations()
     val connection = KeyDBConnection()
     val responseAwaiter = ResponseAwaiter()
     val outputAdapter = KeyDBOutputAdapter(connection)
@@ -99,7 +100,7 @@ fun main() {
 
 
     val handlerRegistry = DefaultHandleRegistry(handlers)
-    outputAdapter.sendRequest(getUserStatRequest)
+//    outputAdapter.sendRequest(getUserStatRequest)
 
     val input = RequestProcessor(KeyDBInputAdapter(connection), handlerRegistry, responseAwaiter)
     input.startListening()

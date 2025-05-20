@@ -7,7 +7,6 @@ import liquibase.database.Database
 import liquibase.database.DatabaseFactory
 import liquibase.database.jvm.JdbcConnection
 import liquibase.resource.ClassLoaderResourceAccessor
-import java.sql.DriverManager
 import java.util.logging.Logger
 
 class LiquibaseRunner(

@@ -6,6 +6,7 @@ import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.JsonClassDiscriminator
+import org.healthapp.app.domain.Sex
 import org.healthapp.app.domain.UserGoal
 import org.healthapp.app.domain.UserWeight
 import org.healthapp.util.UUIDSerializer
@@ -91,7 +92,8 @@ sealed class Request {
         @SerialName("weight") val weight: Double,
         @Serializable(with = LocalDateTimeSerializer::class)
         val time: LocalDateTime,
-        @SerialName("goal") val goal: UserGoal
+        @SerialName("goal") val goal: UserGoal,
+        @SerialName("sex") val sex: Sex
     ) : Request()
 
     @Serializable

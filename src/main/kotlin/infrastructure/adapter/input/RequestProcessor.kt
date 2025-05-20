@@ -22,27 +22,30 @@ class RequestProcessor(
     private val responseChannel = Channel<String>(capacity = Channel.UNLIMITED)
 
     fun startListening() {
-        scope.launch {
-            while (true) {
-                val request = keyDBPort.receiveRequest() ?: continue
-                logger.info("Received request from API gateway: $request")
+        repeat(16){
+            scope.launch {
+                while (true) {
+                    val request = keyDBPort.receiveRequest() ?: continue
+                    logger.info("Received request from API gateway: $request")
 
-                requestChannel.send(request)
+                    requestChannel.send(request)
+                }
+            }
+        }
+
+        repeat(16){
+            scope.launch {
+                while (true) {
+                    val response = keyDBPort.receiveExternalResponse() ?: continue
+                    logger.info("Received response from product service: $response")
+
+                    responseChannel.send(response)
+                }
             }
         }
 
 
-        scope.launch {
-            while (true) {
-                val response = keyDBPort.receiveExternalResponse() ?: continue
-                logger.info("Received response from product service: $response")
-
-                responseChannel.send(response)
-            }
-        }
-
-
-        repeat(4) {
+        repeat(16) {
             scope.launch {
                 for (request in requestChannel) {
                     processRequest(request)
@@ -51,7 +54,7 @@ class RequestProcessor(
         }
 
 
-        repeat(4) {
+        repeat(16) {
             scope.launch {
                 for (response in responseChannel) {
                     processResponse(response)

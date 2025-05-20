@@ -1,6 +1,7 @@
 package org.healthapp.infrastructure.response
 
 import kotlinx.serialization.Serializable
+import org.healthapp.app.domain.Sex
 import org.healthapp.app.domain.UserGoal
 import org.healthapp.util.UUIDSerializer
 import java.util.*
@@ -40,7 +41,8 @@ sealed class Response {
         val weight: Double?,
         val height: Double,
         val age: Int,
-        val goal: UserGoal
+        val goal: UserGoal,
+        val sex: String
 
     ): Response()
 

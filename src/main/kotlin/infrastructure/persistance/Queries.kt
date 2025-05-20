@@ -11,7 +11,7 @@ enum class Queries(val query: String) {
                 "                WHERE user_id = ? AND timestamp >= ? AND timestamp <= ?"
     ),
     ADD_USER(
-        "INSERT INTO users(id, username, age, height, goal) VALUES (?, ?, ?, ?, ?)"
+        "INSERT INTO users(id, username, age, height, goal, sex) VALUES (?, ?, ?, ?, ?, ?)"
     ),
     ADD_USER_WEIGHT(
         "INSERT INTO user_weight(user_id, weight, timestamp) VALUES (?, ?, ?)"
@@ -27,7 +27,8 @@ enum class Queries(val query: String) {
                 "    uw.weight,\n" +
                 "    u.height,\n" +
                 "    u.age,\n" +
-                "    u.goal\n" +
+                "    u.goal,\n" +
+                "    u.sex\n"+
                 "FROM \n" +
                 "    users u\n" +
                 "LEFT JOIN (\n" +

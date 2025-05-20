@@ -11,5 +11,9 @@ enum class UserGoal(val goalName: String){
     @SerialName("keep weight") KEEP_WEIGHT("keep weight")
 }
 
-
-data class User(val id: UUID, val username: String, val age: Int, val height: Double, val userGoal: UserGoal)
+@Serializable
+enum class Sex(val sex: String){
+    @SerialName("F") FEMALE("Female"),
+    @SerialName("M") MALE("Male")
+ }
+data class User(val id: UUID, val username: String, val age: Int, val height: Double, val userGoal: UserGoal, val sex: Sex)

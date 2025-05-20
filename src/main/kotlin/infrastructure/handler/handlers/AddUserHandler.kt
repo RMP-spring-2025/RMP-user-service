@@ -23,7 +23,8 @@ class AddUserHandler(
                 username = request.username,
                 age = request.age,
                 height = request.height,
-                userGoal = request.goal
+                userGoal = request.goal,
+                sex = request.sex
             )
         )
 
